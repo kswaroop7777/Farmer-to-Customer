@@ -1,1 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --green-900: #052E16;
+  --green-800: #14532D;
+  --green-700: #166534;
+  --green-600: #16A34A;
+  --green-500: #22C55E;
+  --green-200: #BBF7D0;
+  --green-100: #DCFCE7;
+  --green-50:  #F0FDF4;
+  --lime-600:  #65A30D;
+  --orange-500:#FB923C;
+  --ink:       #0A0F0D;
+  --cream:     #FAFAF7;
+  --muted:     #6B7770;
+  --border:    rgba(15, 60, 35, 0.10);
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
