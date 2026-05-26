@@ -26,3 +26,99 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* ============ APP SHELL (home) ============ */
+app-home .parent {
+  font-family: var(--font-sans);
+  background: var(--cream);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+app-home h1,
+app-home h2,
+app-home h3,
+app-home h4,
+app-home .display-font {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--green-900);
+  font-weight: 500;
+}
+app-home .eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lime-600);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  app-home .hero-inner { padding: 40px 24px; }
+  app-home .hero-stats { gap: 20px; }
+  app-header .khetly-nav { padding: 10px 16px; }
+  app-header .brand-tag { display: none; }
+  app-header .nav-mid { display: none; }
+}
+
+/* ============ SHARED BRAND ============ */
+.brand-mark {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--green-600);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: white;
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--green-900);
+  line-height: 1;
+}
+.brand-tag {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--lime-600);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ============ SHARED BUTTONS ============ */
+.btn-khetly {
+  background: var(--green-600);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: transform .15s, background .2s, box-shadow .2s;
+}
+.btn-khetly:hover {
+  background: var(--green-700);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -8px rgba(22, 163, 74, 0.5);
+}
+.btn-ink {
+  background: var(--green-900);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background .2s;
+}
+.btn-ink:hover { background: var(--ink); color: white; }
+.btn-ghost {
+  background: transparent;
+  color: var(--green-900);
+  border: 1px solid var(--border);
+  padding: 9px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}

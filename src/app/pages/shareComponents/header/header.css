@@ -1,0 +1,22 @@
+  /* ============ NAV ============ */
+  .khetly-nav {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 12px 22px;
+    position: sticky;
+    top: 16px;
+    z-index: 100;
+  }
+  .nav-link-k {
+    color: var(--green-800);
+    font-size: 14px;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background .2s;
+  }
+  .nav-link-k:hover { background: var(--green-50); color: var(--green-900); }
+ 

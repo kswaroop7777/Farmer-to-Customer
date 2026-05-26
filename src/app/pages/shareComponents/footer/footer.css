@@ -1,0 +1,25 @@
+ /* ============ FOOTER ============ */
+  .khetly-footer {
+    margin-top: 48px;
+    padding: 36px 0 28px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .khetly-footer h5 {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--green-900);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .khetly-footer a {
+    color: var(--muted);
+    text-decoration: none;
+    display: block;
+    padding: 4px 0;
+  }
+  .khetly-footer a:hover { color: var(--green-700); }
+ 

@@ -1,0 +1,72 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'app-login',
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: './login.html',
+  styleUrl: './login.css',
+})
+export class Login {
+
+  loginForm: FormGroup;
+  registerForm: FormGroup;
+  fb = inject(FormBuilder);
+  isLoginMode = true;
+  showLoginPassword = false;
+  showRegisterPassword = false;
+
+  constructor() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      remember: [false],
+    });
+
+    this.registerForm = this.fb.group({
+      userId: [0],
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      roleId: [0, [Validators.required, Validators.min(2)]],
+      phone: ['', [Validators.required]],
+      address: ['', [Validators.required]],
+      city: ['', [Validators.required]],
+      lat: [''],
+      lang: [''],
+      userImge: [''],
+      createdAt: [''],
+      terms: [false, [Validators.requiredTrue]],
+    });
+  }
+
+  toggleMode(mode: 'login' | 'register') {
+    this.isLoginMode = mode === 'login';
+  }
+
+  pickRole(roleId: number) {
+    this.registerForm.patchValue({ roleId });
+  }
+
+  onLogin() {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+    console.log('LOGIN payload →', this.loginForm.value);
+  }
+
+  onRegister() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+    const payload = {
+      ...this.registerForm.value,
+      createdAt: new Date().toISOString(),
+    };
+    delete (payload as any).terms;
+    console.log('REGISTER payload →', payload);
+  }
+}

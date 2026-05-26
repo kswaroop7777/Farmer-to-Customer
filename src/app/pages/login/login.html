@@ -1,0 +1,229 @@
+<div class="parent">
+
+<div class="page">
+
+  <!-- ============ LEFT: editorial ============ -->
+  <section class="left">
+    <a href="#" class="brand">
+      <div class="brand-mark"><i class="ti ti-leaf" style="font-size: 22px;"></i></div>
+      <div>
+        <div class="brand-name">Khetly</div>
+        <div class="brand-tag">Farm · Direct</div>
+      </div>
+    </a>
+
+    <div class="hero-text">
+      <span class="live-chip"><span class="dot"></span>2,400+ farmers · Live now</span>
+      <h1>From the soil<br/>to your <em>kitchen.</em></h1>
+      <p>The marketplace that connects Indian farmers and customers directly. No middlemen, no markups — just real food, fair prices, and a story behind every basket.</p>
+    </div>
+
+    <div class="trust-row">
+      <div class="stat">
+        <div class="num">2,400+</div>
+        <div class="lbl">Farmers</div>
+      </div>
+      <div class="trust-divider"></div>
+      <div class="stat">
+        <div class="num">180+</div>
+        <div class="lbl">Products</div>
+      </div>
+      <div class="trust-divider"></div>
+      <div class="stat">
+        <div class="num">48hr</div>
+        <div class="lbl">Farm → door</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RIGHT: glass form ============ -->
+  <section class="right">
+    <div class="glass-card">
+
+      <!-- Toggle -->
+      <div class="auth-toggle" role="tablist">
+        <button type="button" [class.active]="isLoginMode" (click)="toggleMode('login')">Sign in</button>
+        <button type="button" [class.active]="!isLoginMode" (click)="toggleMode('register')">Create account</button>
+      </div>
+
+      <!-- ============ LOGIN ============ -->
+      <form *ngIf="isLoginMode" class="form-view active" [formGroup]="loginForm" (ngSubmit)="onLogin()" novalidate>
+        <span class="eyebrow">Welcome back</span>
+        <h2>Sign in to <em>Khetly.</em></h2>
+        <p class="sub">Pick up where you left off — your cart, farmers, and orders are waiting.</p>
+
+        <div class="field" [class.has-error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <label for="login-email">Email address</label>
+          <div class="field-input">
+            <i class="ti ti-mail"></i>
+            <input type="email" id="login-email" formControlName="email" placeholder="you@example.com" />
+          </div>
+          <p class="field-error">Enter a valid email address.</p>
+        </div>
+
+        <div class="field" [class.has-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <label for="login-password">Password</label>
+          <div class="field-input">
+            <i class="ti ti-lock"></i>
+            <input [type]="showLoginPassword ? 'text' : 'password'" id="login-password" formControlName="password" placeholder="••••••••" />
+            <button type="button" class="pw-toggle" (click)="showLoginPassword = !showLoginPassword">
+              <i class="ti" [class.ti-eye]="!showLoginPassword" [class.ti-eye-off]="showLoginPassword"></i>
+            </button>
+          </div>
+          <p class="field-error">Password must be at least 6 characters.</p>
+        </div>
+
+        <div class="check-row">
+          <label class="check">
+            <input type="checkbox" formControlName="remember" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="link-soft">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Sign in <i class="ti ti-arrow-right"></i>
+        </button>
+
+        <div class="or-divider">or continue with</div>
+
+        <button type="button" class="btn-social">
+          <i class="ti ti-brand-google" style="font-size: 17px; color: #DB4437;"></i> Continue with Google
+        </button>
+        <button type="button" class="btn-social">
+          <i class="ti ti-brand-whatsapp" style="font-size: 17px; color: #25D366;"></i> Continue with WhatsApp
+        </button>
+
+        <p class="auth-foot">
+          New to Khetly?
+          <a href="#" class="link-soft" (click)="toggleMode('register'); $event.preventDefault()">Create an account</a>
+        </p>
+      </form>
+
+      <!-- ============ REGISTER ============ -->
+      <form *ngIf="!isLoginMode" class="form-view active" [formGroup]="registerForm" (ngSubmit)="onRegister()" novalidate>
+        <span class="eyebrow">Join the marketplace</span>
+        <h2>Create your <em>Khetly</em> account.</h2>
+        <p class="sub">Pick how you want to join. You can change details later from your profile.</p>
+
+        <!-- Role -->
+        <p style="font-size: 12px; font-weight: 500; color: var(--green-800); margin: 0 0 8px;">I want to join as</p>
+        <div class="role-picker">
+          <label class="role-option" [class.selected]="registerForm.get('roleId')?.value === 2" (click)="pickRole(2)">
+            <div class="ico"><i class="ti ti-shopping-bag"></i></div>
+            <p class="ttl">Customer</p>
+            <p class="desc">Buy fresh produce from local farmers</p>
+          </label>
+          <label class="role-option" [class.selected]="registerForm.get('roleId')?.value === 3" (click)="pickRole(3)">
+            <div class="ico"><i class="ti ti-plant-2"></i></div>
+            <p class="ttl">Farmer</p>
+            <p class="desc">Sell your harvest direct to customers</p>
+          </label>
+        </div>
+        <p class="field-error" *ngIf="registerForm.get('roleId')?.invalid && registerForm.get('roleId')?.touched" style="margin: -4px 0 14px; display: block;">Please pick a role.</p>
+
+        <!-- Name -->
+        <div class="field" [class.has-error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+          <label for="reg-name">Full name</label>
+          <div class="field-input">
+            <i class="ti ti-user"></i>
+            <input type="text" id="reg-name" formControlName="name" placeholder="Ramesh Kumar" />
+          </div>
+          <p class="field-error">Name is required.</p>
+        </div>
+
+        <!-- Email + Phone -->
+        <div class="field-row">
+          <div class="field" [class.has-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+            <label for="reg-email">Email</label>
+            <div class="field-input">
+              <i class="ti ti-mail"></i>
+              <input type="email" id="reg-email" formControlName="email" placeholder="you@example.com" />
+            </div>
+            <p class="field-error">Valid email needed.</p>
+          </div>
+          <div class="field" [class.has-error]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+            <label for="reg-phone">Phone</label>
+            <div class="field-input">
+              <i class="ti ti-phone"></i>
+              <input type="tel" id="reg-phone" formControlName="phone" placeholder="+91 98765 43210" />
+            </div>
+            <p class="field-error">Phone is required.</p>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field" [class.has-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          <label for="reg-password">Password</label>
+          <div class="field-input">
+            <i class="ti ti-lock"></i>
+            <input [type]="showRegisterPassword ? 'text' : 'password'" id="reg-password" formControlName="password" placeholder="At least 8 characters" />
+            <button type="button" class="pw-toggle" (click)="showRegisterPassword = !showRegisterPassword">
+              <i class="ti" [class.ti-eye]="!showRegisterPassword" [class.ti-eye-off]="showRegisterPassword"></i>
+            </button>
+          </div>
+          <p class="field-hint">Use 8+ characters with a mix of letters and numbers.</p>
+          <p class="field-error">Password must be at least 8 characters.</p>
+        </div>
+
+        <!-- Address -->
+        <div class="field" [class.has-error]="registerForm.get('address')?.invalid && registerForm.get('address')?.touched">
+          <label for="reg-address">Address</label>
+          <div class="field-input">
+            <i class="ti ti-map-pin"></i>
+            <textarea id="reg-address" formControlName="address" placeholder="House / village / locality"></textarea>
+          </div>
+          <p class="field-error">Address is required.</p>
+        </div>
+
+        <!-- City + Coordinates -->
+        <div class="field-row">
+          <div class="field" [class.has-error]="registerForm.get('city')?.invalid && registerForm.get('city')?.touched">
+            <label for="reg-city">City</label>
+            <div class="field-input">
+              <i class="ti ti-building"></i>
+              <input type="text" id="reg-city" formControlName="city" placeholder="Hyderabad" />
+            </div>
+            <p class="field-error">City is required.</p>
+          </div>
+          <div class="field">
+            <label for="reg-lat">Latitude</label>
+            <div class="field-input">
+              <i class="ti ti-current-location"></i>
+              <input type="text" id="reg-lat" formControlName="lat" placeholder="17.3850" />
+            </div>
+            <p class="field-hint">Optional.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reg-lang">Longitude</label>
+          <div class="field-input">
+            <i class="ti ti-current-location"></i>
+            <input type="text" id="reg-lang" formControlName="lang" placeholder="78.4867" />
+          </div>
+          <p class="field-hint">Optional.</p>
+        </div>
+
+        <!-- Terms -->
+        <div class="check-row" style="margin-top: 14px;">
+          <label class="check">
+            <input type="checkbox" formControlName="terms" />
+            <span>I agree to the <a href="#" class="link-soft">Terms</a> &amp; <a href="#" class="link-soft">Privacy</a></span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          Create account <i class="ti ti-arrow-right"></i>
+        </button>
+
+        <p class="auth-foot">
+          Already have an account?
+          <a href="#" class="link-soft" (click)="toggleMode('login'); $event.preventDefault()">Sign in</a>
+        </p>
+      </form>
+
+    </div>
+  </section>
+</div>
+</div>
