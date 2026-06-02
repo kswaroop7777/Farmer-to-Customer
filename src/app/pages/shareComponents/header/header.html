@@ -15,7 +15,18 @@
     </div>
     <div class="d-flex gap-2 align-items-center">
       <i class="ti ti-shopping-cart" style="font-size: 22px; color: var(--green-800); cursor: pointer;"></i>
-      <button class="btn-khetly" routerLink="/login">Sign in</button>
+
+      <ng-container *ngIf="userName(); else signInBtn">
+        <span class="user-greet d-flex align-items-center gap-1" style="font-weight: 500; color: var(--green-800);">
+          <i class="ti ti-user-circle" style="font-size: 20px;"></i>
+          {{ userName() }}
+        </span>
+        <button type="button" class="btn-khetly" (click)="logout()">Logout</button>
+      </ng-container>
+
+      <ng-template #signInBtn>
+        <button class="btn-khetly" routerLink="/login">Sign in</button>
+      </ng-template>
     </div>
   </nav>
  

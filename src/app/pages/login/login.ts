@@ -1,6 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MasterService } from '../shareServices/master-service';
+import { LoginResponse, RegisterResponse } from '../Interfaces/LoginUser';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +19,8 @@ export class Login {
   isLoginMode = true;
   showLoginPassword = false;
   showRegisterPassword = false;
+  masterSer = inject(MasterService);
+  route=inject(Router)
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -54,7 +59,16 @@ export class Login {
       this.loginForm.markAllAsTouched();
       return;
     }
-    console.log('LOGIN payload →', this.loginForm.value);
+    this.masterSer.userLogin(this.loginForm.value).subscribe({
+      next: (res: LoginResponse) => {
+        const user = (res as any)?.data ?? { email: this.loginForm.value.email };
+        localStorage.setItem('khetlyUser', JSON.stringify(user));
+        this.route.navigateByUrl('home');
+      },
+      error: (err: any) => {
+        alert('Wrong credentials');
+      }
+    });
   }
 
   onRegister() {
@@ -66,7 +80,15 @@ export class Login {
       ...this.registerForm.value,
       createdAt: new Date().toISOString(),
     };
-    delete (payload as any).terms;
-    console.log('REGISTER payload →', payload);
+    this.masterSer.userRegister(payload).subscribe({
+      next: (res: RegisterResponse) => {
+        alert('User Registered Successfully');
+        this.registerForm.reset({ userId: 0, roleId: 0, terms: false });
+        this.toggleMode('login');
+      },
+      error: (err: any) => {
+        alert('Registration Failed');
+      }
+    });
   }
 }
