@@ -21,6 +21,8 @@ export class Login {
   showRegisterPassword = false;
   masterSer = inject(MasterService);
   route=inject(Router)
+  rolesList:any[]=[]
+
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -48,6 +50,7 @@ export class Login {
 
   toggleMode(mode: 'login' | 'register') {
     this.isLoginMode = mode === 'login';
+    this.getAllRolesList()
   }
 
   pickRole(roleId: number) {
@@ -91,4 +94,25 @@ export class Login {
       }
     });
   }
+
+  getAllRolesList(){
+    this.masterSer.getRolesList().subscribe((res:any)=>{
+      next:(res:any)=>{
+        this.rolesList= res.data
+      }
+    })
+  }
+
+  getRoleDescription(roleName: string): string {
+  switch (roleName?.toLowerCase()) {
+    case 'admin':
+      return 'Manage users, products and orders';
+    case 'farmer':
+      return 'Sell your harvest directly to customers';
+    case 'customer':
+      return 'Buy fresh produce from local farmers';
+    default:
+      return 'User role';
+  }
+}
 }

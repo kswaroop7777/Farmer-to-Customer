@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoginRequest, LoginResponse, RegisterResponse, UserRegister } from '../Interfaces/LoginUser';
+import { ApiResponse, LoginRequest, LoginResponse, RegisterResponse, UserRegister } from '../Interfaces/LoginUser';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -15,5 +15,9 @@ export class MasterService {
 
   userRegister(data: UserRegister) {
     return this.http.post<RegisterResponse>('https://feestracking.freeprojectapi.com/api/farmerUsers/create-user', data);
+  }
+
+  getRolesList(){
+    return this.http.get<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerRoles/get-all-roles')
   }
 }

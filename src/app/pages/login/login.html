@@ -108,20 +108,18 @@
 
         <!-- Role -->
         <p style="font-size: 12px; font-weight: 500; color: var(--green-800); margin: 0 0 8px;">I want to join as</p>
-        <div class="role-picker">
-          <label class="role-option" [class.selected]="registerForm.get('roleId')?.value === 2" (click)="pickRole(2)">
+        @for(item of rolesList; track item){
+ <div class="role-picker">
+          <label class="role-option" [class.selected]="registerForm.get('roleId')?.value === item.roleId" (click)="pickRole(item.roleId)">
             <div class="ico"><i class="ti ti-shopping-bag"></i></div>
-            <p class="ttl">Customer</p>
-            <p class="desc">Buy fresh produce from local farmers</p>
-          </label>
-          <label class="role-option" [class.selected]="registerForm.get('roleId')?.value === 3" (click)="pickRole(3)">
-            <div class="ico"><i class="ti ti-plant-2"></i></div>
-            <p class="ttl">Farmer</p>
-            <p class="desc">Sell your harvest direct to customers</p>
+            <p class="ttl">{{item.roleName}}</p>
+            <p class="desc">{{ getRoleDescription(item.roleName) }}</p>
           </label>
         </div>
         <p class="field-error" *ngIf="registerForm.get('roleId')?.invalid && registerForm.get('roleId')?.touched" style="margin: -4px 0 14px; display: block;">Please pick a role.</p>
 
+        }
+       
         <!-- Name -->
         <div class="field" [class.has-error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
           <label for="reg-name">Full name</label>

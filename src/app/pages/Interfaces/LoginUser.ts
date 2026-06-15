@@ -29,3 +29,9 @@ export interface RegisterResponse {
   message: string;
   data?: any;
 }
+
+export interface ApiResponse {
+  result:boolean;
+  message:string;
+  data?:any
+}
