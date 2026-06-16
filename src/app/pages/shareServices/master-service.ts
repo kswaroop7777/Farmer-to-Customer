@@ -24,6 +24,9 @@ export class MasterService {
   createRole(data: Role) {
     return this.http.post<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerRoles/create-role', data);
   }
+   updateRole(roleId:number, data:Role){
+    return this.http.post<ApiResponse>(`https://feestracking.freeprojectapi.com/api/farmerCategories/update-role/${roleId}`,data)
+  }
 
   getCategoriesList() {
     return this.http.get<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerCategories/get-all-categories');
@@ -32,4 +35,9 @@ export class MasterService {
   createCategory(data: Category) {
     return this.http.post<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerCategories/create-category', data);
   }
+
+  updateCategory(categoryId: number,data:Category){
+    return this.http.post<ApiResponse>(`https://feestracking.freeprojectapi.com/api/farmerCategories/update-category/${categoryId}`,data)
+  }
+ 
 }

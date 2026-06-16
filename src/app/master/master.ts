@@ -80,6 +80,19 @@ export class Master implements OnInit {
       this.roleForm.markAllAsTouched();
       return;
     }
+    const payload = this.roleForm.value
+    if (payload.roleId > 0) {
+      this.masterSer.updateRole(payload.roleId, payload).subscribe({
+        next: () => {
+          alert('Role updated successfully');
+          this.resetRoleForm();
+          this.loadRoles();
+        },
+        error:()=>{
+           alert('Failed to update Role');
+        }
+      })
+    }else{
     this.masterSer.createRole(this.roleForm.value).subscribe({
       next: () => {
         alert('Role saved successfully');
@@ -89,20 +102,34 @@ export class Master implements OnInit {
       error: () => alert('Failed to save role'),
     });
   }
+  }
 
   saveCategory() {
     if (this.categoryForm.invalid) {
       this.categoryForm.markAllAsTouched();
       return;
     }
-    this.masterSer.createCategory(this.categoryForm.value).subscribe({
-      next: () => {
-        alert('Category saved successfully');
-        this.resetCategoryForm();
-        this.loadCategories();
-      },
-      error: () => alert('Failed to save category'),
-    });
+    const payload = this.categoryForm.value
+    if (payload.categoryId > 0) {
+      this.masterSer.updateCategory(payload.categoryId, payload).subscribe({
+        next: () => {
+          alert('Category updated successfully');
+          this.resetCategoryForm();
+          this.loadCategories();
+        }, error: () => {
+          alert('Failed to update category')
+        }
+      })
+    } else {
+      this.masterSer.createCategory(this.categoryForm.value).subscribe({
+        next: () => {
+          alert('Category saved successfully');
+          this.resetCategoryForm();
+          this.loadCategories();
+        },
+        error: () => alert('Failed to save category'),
+      });
+    }
   }
 
   editRole(role: Role) {
