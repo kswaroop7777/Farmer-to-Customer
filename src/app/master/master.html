@@ -1,0 +1,264 @@
+<div class="master-parent">
+
+  <!-- ============ PAGE HEAD ============ -->
+  <header class="master-head">
+    <div class="head-inner">
+      <div class="head-text">
+        <span class="eyebrow"><i class="ti ti-settings-cog"></i> Master data</span>
+        <h1>Manage your <em>marketplace</em> basics.</h1>
+        <p class="sub">Roles decide who can do what. Categories shape how customers discover produce. Keep both tidy and the rest follows.</p>
+      </div>
+      <div class="head-stats">
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-id-badge-2"></i></div>
+          <div>
+            <div class="num">{{ rolesList().length }}</div>
+            <div class="lbl">Roles</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-leaf"></i></div>
+          <div>
+            <div class="num">{{ categoriesList().length }}</div>
+            <div class="lbl">Categories</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TAB SWITCHER ============ -->
+    <div class="tab-bar">
+      <button type="button" class="tab" [class.active]="activeTab() === 'roles'" (click)="switchTab('roles')">
+        <i class="ti ti-id-badge-2"></i>
+        <span>Roles</span>
+        <em class="tab-count">{{ rolesList().length }}</em>
+      </button>
+      <button type="button" class="tab" [class.active]="activeTab() === 'categories'" (click)="switchTab('categories')">
+        <i class="ti ti-leaf"></i>
+        <span>Categories</span>
+        <em class="tab-count">{{ categoriesList().length }}</em>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ ROLES PANEL ============ -->
+  <section class="panel" [class.active]="activeTab() === 'roles'" *ngIf="activeTab() === 'roles'">
+    <div class="panel-grid">
+
+      <!-- LEFT: form card -->
+      <aside class="form-card">
+        <div class="form-card-head">
+          <span class="eyebrow">
+            <i class="ti" [class.ti-plus]="roleForm.value.roleId === 0" [class.ti-edit]="roleForm.value.roleId > 0"></i>
+            {{ roleForm.value.roleId > 0 ? 'Edit role' : 'Add role' }}
+          </span>
+          <h2>{{ roleForm.value.roleId > 0 ? 'Update' : 'New' }} <em>role</em>.</h2>
+          <p class="sub">Roles like Farmer, Customer, or Admin. Keep names short and human.</p>
+        </div>
+
+        <form [formGroup]="roleForm" (ngSubmit)="saveRole()" novalidate>
+          <div class="field">
+            <label for="role-id">Role ID</label>
+            <div class="field-input">
+              <i class="ti ti-hash"></i>
+              <input type="number" id="role-id" formControlName="roleId" readonly />
+            </div>
+            <p class="field-hint">Auto-generated. Leave as 0 for new entries.</p>
+          </div>
+
+          <div class="field"
+               [class.has-error]="roleForm.get('roleName')?.invalid && roleForm.get('roleName')?.touched">
+            <label for="role-name">Role name</label>
+            <div class="field-input">
+              <i class="ti ti-id-badge-2"></i>
+              <input type="text" id="role-name" formControlName="roleName" placeholder="e.g. Farmer" />
+            </div>
+            <p class="field-error">Role name is required (min 2 chars).</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" (click)="resetRoleForm()">
+              <i class="ti ti-refresh"></i> Reset
+            </button>
+            <button type="submit" class="btn-submit">
+              {{ roleForm.value.roleId > 0 ? 'Update role' : 'Save role' }}
+              <i class="ti ti-check"></i>
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <!-- RIGHT: table card -->
+      <div class="table-card">
+        <div class="table-head">
+          <div>
+            <h3>All roles</h3>
+            <p class="sub">Live list of who can sign in and what they see.</p>
+          </div>
+          <div class="search-input">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="Search roles..."
+                   [value]="roleSearch()"
+                   (input)="onRoleSearch($any($event.target).value)" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 90px;">ID</th>
+                <th>Role name</th>
+                <th style="width: 140px;" class="t-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (role of filteredRoles(); track role.roleId) {
+                <tr>
+                  <td><span class="id-chip">#{{ role.roleId }}</span></td>
+                  <td>
+                    <div class="cell-main">
+                      <span class="row-icon green"><i class="ti ti-id-badge-2"></i></span>
+                      <span>{{ role.roleName }}</span>
+                    </div>
+                  </td>
+                  <td class="t-right">
+                    <button class="icon-btn" title="Edit" (click)="editRole(role)">
+                      <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="icon-btn danger" title="Delete" (click)="deleteRole(role)">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" style="text-align: center; padding: 28px; color: var(--muted);">
+                    No roles found.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <span class="foot-info">
+            Showing <b>{{ filteredRoles().length }}</b> of <b>{{ rolesList().length }}</b> roles
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORIES PANEL ============ -->
+  <section class="panel" [class.active]="activeTab() === 'categories'" *ngIf="activeTab() === 'categories'">
+    <div class="panel-grid">
+
+      <!-- LEFT: form card -->
+      <aside class="form-card">
+        <div class="form-card-head">
+          <span class="eyebrow">
+            <i class="ti" [class.ti-plus]="categoryForm.value.categoryId === 0" [class.ti-edit]="categoryForm.value.categoryId > 0"></i>
+            {{ categoryForm.value.categoryId > 0 ? 'Edit category' : 'Add category' }}
+          </span>
+          <h2>{{ categoryForm.value.categoryId > 0 ? 'Update' : 'New' }} <em>category</em>.</h2>
+          <p class="sub">Buckets like Vegetables, Fruits, or Dairy. Help customers find what they love.</p>
+        </div>
+
+        <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()" novalidate>
+          <div class="field">
+            <label for="cat-id">Category ID</label>
+            <div class="field-input">
+              <i class="ti ti-hash"></i>
+              <input type="number" id="cat-id" formControlName="categoryId" readonly />
+            </div>
+            <p class="field-hint">Auto-generated. Leave as 0 for new entries.</p>
+          </div>
+
+          <div class="field"
+               [class.has-error]="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+            <label for="cat-name">Category name</label>
+            <div class="field-input">
+              <i class="ti ti-leaf"></i>
+              <input type="text" id="cat-name" formControlName="name" placeholder="e.g. Vegetables" />
+            </div>
+            <p class="field-error">Category name is required (min 2 chars).</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" (click)="resetCategoryForm()">
+              <i class="ti ti-refresh"></i> Reset
+            </button>
+            <button type="submit" class="btn-submit">
+              {{ categoryForm.value.categoryId > 0 ? 'Update category' : 'Save category' }}
+              <i class="ti ti-check"></i>
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <!-- RIGHT: table card -->
+      <div class="table-card">
+        <div class="table-head">
+          <div>
+            <h3>All categories</h3>
+            <p class="sub">Discovery buckets shown across the storefront.</p>
+          </div>
+          <div class="search-input">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="Search categories..."
+                   [value]="categorySearch()"
+                   (input)="onCategorySearch($any($event.target).value)" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 90px;">ID</th>
+                <th>Category name</th>
+                <th style="width: 140px;" class="t-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cat of filteredCategories(); track cat.categoryId) {
+                <tr>
+                  <td><span class="id-chip">#{{ cat.categoryId }}</span></td>
+                  <td>
+                    <div class="cell-main">
+                      <span class="row-icon green"><i class="ti ti-leaf"></i></span>
+                      <span>{{ cat.name }}</span>
+                    </div>
+                  </td>
+                  <td class="t-right">
+                    <button class="icon-btn" title="Edit" (click)="editCategory(cat)">
+                      <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="icon-btn danger" title="Delete" (click)="deleteCategory(cat)">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" style="text-align: center; padding: 28px; color: var(--muted);">
+                    No categories found.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <span class="foot-info">
+            Showing <b>{{ filteredCategories().length }}</b> of <b>{{ categoriesList().length }}</b> categories
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

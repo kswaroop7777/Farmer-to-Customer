@@ -35,3 +35,13 @@ export interface ApiResponse {
   message:string;
   data?:any
 }
+
+export interface Role {
+  roleId: number;
+  roleName: string;
+}
+
+export interface Category {
+  categoryId: number;
+  name: string;
+}

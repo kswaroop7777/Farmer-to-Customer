@@ -107,18 +107,19 @@
         <p class="sub">Pick how you want to join. You can change details later from your profile.</p>
 
         <!-- Role -->
-        <p style="font-size: 12px; font-weight: 500; color: var(--green-800); margin: 0 0 8px;">I want to join as</p>
-        @for(item of rolesList; track item){
- <div class="role-picker">
-          <label class="role-option" [class.selected]="registerForm.get('roleId')?.value === item.roleId" (click)="pickRole(item.roleId)">
-            <div class="ico"><i class="ti ti-shopping-bag"></i></div>
-            <p class="ttl">{{item.roleName}}</p>
-            <p class="desc">{{ getRoleDescription(item.roleName) }}</p>
-          </label>
+        <div class="field" [class.has-error]="registerForm.get('roleId')?.invalid && registerForm.get('roleId')?.touched">
+          <label for="reg-role">I want to join as</label>
+          <div class="field-input">
+            <i class="ti ti-id-badge-2"></i>
+            <select id="reg-role" formControlName="roleId">
+              <option [ngValue]="0" disabled>Select your role</option>
+              @for(item of rolesList; track item.roleId){
+                <option [ngValue]="item.roleId">{{ item.roleName }}</option>
+              }
+            </select>
+          </div>
+          <p class="field-error">Please pick a role.</p>
         </div>
-        <p class="field-error" *ngIf="registerForm.get('roleId')?.invalid && registerForm.get('roleId')?.touched" style="margin: -4px 0 14px; display: block;">Please pick a role.</p>
-
-        }
        
         <!-- Name -->
         <div class="field" [class.has-error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">

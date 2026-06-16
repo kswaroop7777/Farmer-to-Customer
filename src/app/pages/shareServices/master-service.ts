@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiResponse, LoginRequest, LoginResponse, RegisterResponse, UserRegister } from '../Interfaces/LoginUser';
+import { ApiResponse, Category, LoginRequest, LoginResponse, RegisterResponse, Role, UserRegister } from '../Interfaces/LoginUser';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -19,5 +19,17 @@ export class MasterService {
 
   getRolesList(){
     return this.http.get<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerRoles/get-all-roles')
+  }
+
+  createRole(data: Role) {
+    return this.http.post<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerRoles/create-role', data);
+  }
+
+  getCategoriesList() {
+    return this.http.get<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerCategories/get-all-categories');
+  }
+
+  createCategory(data: Category) {
+    return this.http.post<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerCategories/create-category', data);
   }
 }

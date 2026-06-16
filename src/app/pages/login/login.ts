@@ -53,10 +53,6 @@ export class Login {
     this.getAllRolesList()
   }
 
-  pickRole(roleId: number) {
-    this.registerForm.patchValue({ roleId });
-  }
-
   onLogin() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -97,22 +93,7 @@ export class Login {
 
   getAllRolesList(){
     this.masterSer.getRolesList().subscribe((res:any)=>{
-      next:(res:any)=>{
-        this.rolesList= res.data
-      }
-    })
+      this.rolesList = res.data;
+    });
   }
-
-  getRoleDescription(roleName: string): string {
-  switch (roleName?.toLowerCase()) {
-    case 'admin':
-      return 'Manage users, products and orders';
-    case 'farmer':
-      return 'Sell your harvest directly to customers';
-    case 'customer':
-      return 'Buy fresh produce from local farmers';
-    default:
-      return 'User role';
-  }
-}
 }
