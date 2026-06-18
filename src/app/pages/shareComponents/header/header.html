@@ -9,9 +9,17 @@
     </div>
     <div class="nav-mid d-flex gap-1">
       <a href="#" class="nav-link-k">Home</a>
-      <a href="#" class="nav-link-k">Products</a>
-      <a href="#" class="nav-link-k" routerLink="/master">Master</a>
-      <a href="#" class="nav-link-k" routerLink="/product">Product</a>
+    @if(user.userId !==0){
+        @if(user.roleId ===1){
+          <a href="#" class="nav-link-k" routerLink="/master">Master</a>
+          <a href="#" class="nav-link-k" routerLink="/masterproducts">Master Products</a>
+       }@else if (user.roleId ===2) {
+          <a href="#" class="nav-link-k" routerLink="/farmerproducts">Farmer Products</a>
+      }@else{
+           <a href="#" class="nav-link-k" routerLink="/product">Product</a>
+      }
+      
+    }
     </div>
     <div class="d-flex gap-2 align-items-center">
       <i class="ti ti-shopping-cart" style="font-size: 22px; color: var(--green-800); cursor: pointer;"></i>

@@ -1,0 +1,179 @@
+<div class="mp-parent">
+
+  <!-- ============ HEAD ============ -->
+  <header class="mp-head">
+    <div class="head-inner">
+      <div class="head-text">
+        <span class="eyebrow"><i class="ti ti-box-seam"></i> Master products</span>
+        <h1>The <em>catalog</em> behind every basket.</h1>
+        <p class="sub">Add or update the master list of produce. These are what farmers list against — keep names clean and pictures appetising.</p>
+      </div>
+      <div class="head-stats">
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-box-seam"></i></div>
+          <div>
+            <div class="num">{{ products().length }}</div>
+            <div class="lbl">Products</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-leaf"></i></div>
+          <div>
+            <div class="num">{{ categories().length }}</div>
+            <div class="lbl">Categories</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel-grid">
+
+      <!-- LEFT: form -->
+      <aside class="form-card">
+        <div class="form-card-head">
+          <span class="eyebrow">
+            <i class="ti" [class.ti-plus]="productForm.value.productId === 0" [class.ti-edit]="productForm.value.productId > 0"></i>
+            {{ productForm.value.productId > 0 ? 'Edit product' : 'Add product' }}
+          </span>
+          <h2>{{ productForm.value.productId > 0 ? 'Update' : 'New' }} <em>product</em>.</h2>
+          <p class="sub">Describe the produce as a customer would search for it. Pictures help.</p>
+        </div>
+
+        <form [formGroup]="productForm" (ngSubmit)="saveProduct()" novalidate>
+          <div class="field">
+            <label for="p-id">Product ID</label>
+            <div class="field-input">
+              <i class="ti ti-hash"></i>
+              <input type="number" id="p-id" formControlName="productId" readonly />
+            </div>
+            <p class="field-hint">Auto-generated. Leave as 0 for new entries.</p>
+          </div>
+
+          <div class="field"
+               [class.has-error]="productForm.get('name')?.invalid && productForm.get('name')?.touched">
+            <label for="p-name">Name</label>
+            <div class="field-input">
+              <i class="ti ti-tag"></i>
+              <input type="text" id="p-name" formControlName="name" placeholder="e.g. Alphonso Mango" />
+            </div>
+            <p class="field-error">Product name is required (min 2 chars).</p>
+          </div>
+
+          <div class="field"
+               [class.has-error]="productForm.get('categoryId')?.invalid && productForm.get('categoryId')?.touched">
+            <label for="p-cat">Category</label>
+            <div class="field-input">
+              <i class="ti ti-leaf"></i>
+              <select id="p-cat" formControlName="categoryId">
+                <option [ngValue]="0" disabled>Select a category</option>
+                @for (c of categories(); track c.categoryId) {
+                  <option [ngValue]="c.categoryId">{{ c.name }}</option>
+                }
+              </select>
+            </div>
+            <p class="field-error">Please pick a category.</p>
+          </div>
+
+          <div class="field"
+               [class.has-error]="productForm.get('description')?.invalid && productForm.get('description')?.touched">
+            <label for="p-desc">Description</label>
+            <div class="field-input">
+              <i class="ti ti-align-left"></i>
+              <textarea id="p-desc" formControlName="description" placeholder="What makes it special?"></textarea>
+            </div>
+            <p class="field-error">Description is required.</p>
+          </div>
+
+          <div class="field">
+            <label for="p-img">Image URL</label>
+            <div class="field-input">
+              <i class="ti ti-photo"></i>
+              <input type="text" id="p-img" formControlName="image" placeholder="https://..." />
+            </div>
+            <p class="field-hint">Paste a public image URL.</p>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" (click)="resetForm()">
+              <i class="ti ti-refresh"></i> Reset
+            </button>
+            <button type="submit" class="btn-submit">
+              {{ productForm.value.productId > 0 ? 'Update' : 'Save' }} product
+              <i class="ti ti-check"></i>
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <!-- RIGHT: table -->
+      <div class="table-card">
+        <div class="table-head">
+          <div>
+            <h3>All products</h3>
+            <p class="sub">The shared catalog farmers list their stock against.</p>
+          </div>
+          <div class="search-input">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="Search name, category, description..."
+                   [value]="search()" (input)="onSearch($any($event.target).value)" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">ID</th>
+                <th style="width: 70px;">Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th style="width: 130px;" class="t-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of filtered(); track p.productId) {
+                <tr>
+                  <td><span class="id-chip">#{{ p.productId }}</span></td>
+                  <td>
+                    @if (p.image) {
+                      <div class="thumb" [style.background-image]="'url(' + p.image + ')'"></div>
+                    } @else {
+                      <div class="thumb thumb-empty"><i class="ti ti-photo-off"></i></div>
+                    }
+                  </td>
+                  <td><span class="cell-strong">{{ p.name }}</span></td>
+                  <td><span class="badge-soft">{{ p.categoryName ?? categoryName(p.categoryId) }}</span></td>
+                  <td><span class="cell-muted">{{ p.description }}</span></td>
+                  <td class="t-right">
+                    <button class="icon-btn" title="Edit" (click)="editProduct(p)">
+                      <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="icon-btn danger" title="Delete" (click)="deleteProduct(p)">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 28px; color: var(--muted);">
+                    No products found.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <span class="foot-info">
+            Showing <b>{{ filtered().length }}</b> of <b>{{ products().length }}</b> products
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

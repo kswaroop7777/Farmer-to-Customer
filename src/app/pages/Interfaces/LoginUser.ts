@@ -45,3 +45,26 @@ export interface Category {
   categoryId: number;
   name: string;
 }
+
+export interface Product {
+  productId: number;
+  name: string;
+  categoryId: number;
+  description: string;
+  image: string;
+  categoryName?: string;
+}
+
+export interface FarmerProduct {
+  farmerProductId: number;
+  farmerId: number;
+  productId: number;
+  pricePerKg: number;
+  availableQuantity: number;
+  availableDate: string;
+  status: string;
+  farmerName?: string;
+  productName?: string;
+  categoryName?: string;
+  image?: string;
+}

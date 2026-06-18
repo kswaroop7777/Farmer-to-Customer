@@ -1,0 +1,225 @@
+<div class="fp-parent">
+
+  <header class="fp-head">
+    <div class="head-inner">
+      <div class="head-text">
+        <span class="eyebrow"><i class="ti ti-plant-2"></i> Farmer listings</span>
+        <h1>What's <em>on the cart</em> today.</h1>
+        <p class="sub">Tell us what's harvested, how much, and at what price. Listings show up in the storefront the moment you save them.</p>
+      </div>
+      <div class="head-stats">
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-basket"></i></div>
+          <div>
+            <div class="num">{{ farmerProducts().length }}</div>
+            <div class="lbl">Listings</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-box-seam"></i></div>
+          <div>
+            <div class="num">{{ products().length }}</div>
+            <div class="lbl">Products</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="panel-grid">
+
+      <!-- LEFT: form -->
+      <aside class="form-card">
+        <div class="form-card-head">
+          <span class="eyebrow">
+            <i class="ti" [class.ti-plus]="fpForm.value.farmerProductId === 0" [class.ti-edit]="fpForm.value.farmerProductId > 0"></i>
+            {{ fpForm.value.farmerProductId > 0 ? 'Edit listing' : 'New listing' }}
+          </span>
+          <h2>{{ fpForm.value.farmerProductId > 0 ? 'Update' : 'List' }} a <em>harvest</em>.</h2>
+          <p class="sub">Pick a product, set the price per kg, and tell customers how much is ready.</p>
+        </div>
+
+        <form [formGroup]="fpForm" (ngSubmit)="saveFarmerProduct()" novalidate>
+          <div class="field">
+            <label for="fp-id">Listing ID</label>
+            <div class="field-input">
+              <i class="ti ti-hash"></i>
+              <input type="number" id="fp-id" formControlName="farmerProductId" readonly />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field"
+                 [class.has-error]="fpForm.get('farmerId')?.invalid && fpForm.get('farmerId')?.touched">
+              <label for="fp-farmer">Farmer ID</label>
+              <div class="field-input">
+                <i class="ti ti-user"></i>
+                <input type="number" id="fp-farmer" formControlName="farmerId" placeholder="e.g. 12" />
+              </div>
+              <p class="field-error">Farmer ID is required.</p>
+            </div>
+
+            <div class="field"
+                 [class.has-error]="fpForm.get('productId')?.invalid && fpForm.get('productId')?.touched">
+              <label for="fp-product">Product</label>
+              <div class="field-input">
+                <i class="ti ti-box-seam"></i>
+                <select id="fp-product" formControlName="productId">
+                  <option [ngValue]="0" disabled>Pick a product</option>
+                  @for (p of products(); track p.productId) {
+                    <option [ngValue]="p.productId">{{ p.name }}</option>
+                  }
+                </select>
+              </div>
+              <p class="field-error">Pick a product.</p>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field"
+                 [class.has-error]="fpForm.get('pricePerKg')?.invalid && fpForm.get('pricePerKg')?.touched">
+              <label for="fp-price">Price / kg (₹)</label>
+              <div class="field-input">
+                <i class="ti ti-currency-rupee"></i>
+                <input type="number" id="fp-price" formControlName="pricePerKg" placeholder="0" min="0" step="0.5" />
+              </div>
+              <p class="field-error">Price is required.</p>
+            </div>
+
+            <div class="field"
+                 [class.has-error]="fpForm.get('availableQuantity')?.invalid && fpForm.get('availableQuantity')?.touched">
+              <label for="fp-qty">Qty (kg)</label>
+              <div class="field-input">
+                <i class="ti ti-weight"></i>
+                <input type="number" id="fp-qty" formControlName="availableQuantity" placeholder="0" min="0" />
+              </div>
+              <p class="field-error">Quantity is required.</p>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field"
+                 [class.has-error]="fpForm.get('availableDate')?.invalid && fpForm.get('availableDate')?.touched">
+              <label for="fp-date">Available date</label>
+              <div class="field-input">
+                <i class="ti ti-calendar-event"></i>
+                <input type="date" id="fp-date" formControlName="availableDate" />
+              </div>
+              <p class="field-error">Date is required.</p>
+            </div>
+
+            <div class="field"
+                 [class.has-error]="fpForm.get('status')?.invalid && fpForm.get('status')?.touched">
+              <label for="fp-status">Status</label>
+              <div class="field-input">
+                <i class="ti ti-circle-check"></i>
+                <select id="fp-status" formControlName="status">
+                  @for (s of statusOptions; track s) {
+                    <option [ngValue]="s">{{ s }}</option>
+                  }
+                </select>
+              </div>
+              <p class="field-error">Pick a status.</p>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" (click)="resetForm()">
+              <i class="ti ti-refresh"></i> Reset
+            </button>
+            <button type="submit" class="btn-submit">
+              {{ fpForm.value.farmerProductId > 0 ? 'Update' : 'Save' }} listing
+              <i class="ti ti-check"></i>
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <!-- RIGHT: table -->
+      <div class="table-card">
+        <div class="table-head">
+          <div>
+            <h3>All listings</h3>
+            <p class="sub">Live inventory across every farmer on the platform.</p>
+          </div>
+          <div class="search-input">
+            <i class="ti ti-search"></i>
+            <input type="text" placeholder="Search product, farmer, status..."
+                   [value]="search()" (input)="onSearch($any($event.target).value)" />
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">ID</th>
+                <th>Product</th>
+                <th>Farmer</th>
+                <th style="width: 110px;">Price/kg</th>
+                <th style="width: 100px;">Qty</th>
+                <th style="width: 130px;">Available</th>
+                <th style="width: 130px;">Status</th>
+                <th style="width: 130px;" class="t-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fp of filtered(); track fp.farmerProductId) {
+                <tr>
+                  <td><span class="id-chip">#{{ fp.farmerProductId }}</span></td>
+                  <td>
+                    <div class="cell-main">
+                      @if (fp.image) {
+                        <div class="thumb" [style.background-image]="'url(' + fp.image + ')'"></div>
+                      } @else {
+                        <div class="thumb thumb-empty"><i class="ti ti-leaf"></i></div>
+                      }
+                      <div>
+                        <div class="cell-strong">{{ fp.productName ?? productName(fp.productId) }}</div>
+                        @if (fp.categoryName) {
+                          <div class="cell-sub">{{ fp.categoryName }}</div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge-soft">
+                      <i class="ti ti-user"></i>
+                      {{ fp.farmerName ?? ('#' + fp.farmerId) }}
+                    </span>
+                  </td>
+                  <td><span class="cell-strong">₹{{ fp.pricePerKg }}</span></td>
+                  <td>{{ fp.availableQuantity }} kg</td>
+                  <td><span class="cell-muted">{{ fp.availableDate | date:'mediumDate' }}</span></td>
+                  <td><span [class]="statusClass(fp.status)">{{ fp.status }}</span></td>
+                  <td class="t-right">
+                    <button class="icon-btn" title="Edit" (click)="editFarmerProduct(fp)">
+                      <i class="ti ti-pencil"></i>
+                    </button>
+                    <button class="icon-btn danger" title="Delete" (click)="deleteFarmerProduct(fp)">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" style="text-align: center; padding: 28px; color: var(--muted);">
+                    No listings yet.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <span class="foot-info">
+            Showing <b>{{ filtered().length }}</b> of <b>{{ farmerProducts().length }}</b> listings
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
