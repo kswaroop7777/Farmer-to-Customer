@@ -62,6 +62,8 @@ export class Login {
       next: (res: LoginResponse) => {
         const user = (res as any)?.data ?? { email: this.loginForm.value.email };
         localStorage.setItem('khetlyUser', JSON.stringify(user));
+        localStorage.setItem('khetlytoken',JSON.stringify(user.token))
+        this.masterSer.onLogin$.next(true)
         this.route.navigateByUrl('home');
       },
       error: (err: any) => {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiResponse, Category, LoginRequest, LoginResponse, RegisterResponse, Role, UserRegister } from '../Interfaces/LoginUser';
 import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,7 @@ export class MasterService {
 
   constructor(private http: HttpClient) {}
 
+  onLogin$ :Subject<boolean> = new Subject<boolean>()
   userLogin(data: LoginRequest) {
     return this.http.post<LoginResponse>('https://feestracking.freeprojectapi.com/api/farmerUsers/login', data);
   }
@@ -25,7 +27,7 @@ export class MasterService {
     return this.http.post<ApiResponse>('https://feestracking.freeprojectapi.com/api/farmerRoles/create-role', data);
   }
    updateRole(roleId:number, data:Role){
-    return this.http.post<ApiResponse>(`https://feestracking.freeprojectapi.com/api/farmerCategories/update-role/${roleId}`,data)
+    return this.http.put<ApiResponse>(`https://feestracking.freeprojectapi.com/api/farmerRoles/update-role/${roleId}`,data)
   }
 
   getCategoriesList() {
@@ -37,7 +39,7 @@ export class MasterService {
   }
 
   updateCategory(categoryId: number,data:Category){
-    return this.http.post<ApiResponse>(`https://feestracking.freeprojectapi.com/api/farmerCategories/update-category/${categoryId}`,data)
+    return this.http.put<ApiResponse>(`https://feestracking.freeprojectapi.com/api/farmerCategories/update-category/${categoryId}`,data)
   }
  
 }
