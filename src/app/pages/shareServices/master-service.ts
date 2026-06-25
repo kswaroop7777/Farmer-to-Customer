@@ -70,6 +70,10 @@ export class MasterService {
     return this.http.get<ApiResponse>(`${this.base}/farmerFarmerProducts/get-all-farmer-products-with-joins`);
   }
 
+  getFarmerProductsByCategory(categoryId: number) {
+    return this.http.get<ApiResponse>(`${this.base}/farmerFarmerProducts/getFarmerProductByCateId?categoryId=${categoryId}`);
+  }
+
   updateFarmerProduct(farmerProductId: number, data: FarmerProduct) {
     return this.http.put<ApiResponse>(`${this.base}/farmerFarmerProducts/update-farmer-product/${farmerProductId}`, data);
   }

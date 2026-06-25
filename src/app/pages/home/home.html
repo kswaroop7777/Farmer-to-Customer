@@ -22,53 +22,89 @@
   </section>
  
   <!-- ============ CATEGORY STRIP ============ -->
-  <section class="mt-4">
-    <div class="row g-3">
-      <div class="col-6 col-md-2">
-        <div class="category-card">
-          <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=300&q=80');"></div>
-          <p class="category-name">Vegetables</p>
-          <p class="category-count">84 items</p>
-        </div>
+  <section class="mt-4 category-section">
+    @if (categories().length === 0) {
+      <div class="text-center" style="color: var(--muted); padding: 20px;">
+        Loading categories…
       </div>
-      <div class="col-6 col-md-2">
-        <div class="category-card">
-          <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=300&q=80');"></div>
-          <p class="category-name">Fruits</p>
-          <p class="category-count">42 items</p>
-        </div>
+    } @else if (showAllCategories()) {
+      <div class="cat-strip-head">
+        <span class="cat-strip-title">All categories ({{ categories().length }})</span>
+        <button type="button" class="cat-collapse" (click)="toggleViewAll()">
+          <i class="ti ti-x"></i> Show less
+        </button>
       </div>
-      <div class="col-6 col-md-2">
-        <div class="category-card">
-          <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=300&q=80');"></div>
-          <p class="category-name">Herbs</p>
-          <p class="category-count">18 items</p>
+      <div class="cat-strip-h">
+        <div class="category-card cat-tile all-card"
+             [class.active]="selectedCategoryId() === null"
+             (click)="selectAll()">
+          <div class="category-img category-img-icon all-icon">
+            <i class="ti ti-apps"></i>
+          </div>
+          <p class="category-name">All</p>
+          <p class="category-count">
+            {{ selectedCategoryId() === null ? 'Selected' : 'Show everything' }}
+          </p>
         </div>
+        @for (cat of categories(); track cat.categoryId) {
+          <div class="category-card cat-tile"
+               [class.active]="selectedCategoryId() === cat.categoryId"
+               (click)="selectCategory(cat.categoryId)">
+            <div class="category-img category-img-icon">
+              <i class="ti" [ngClass]="categoryIcon(cat.name)"></i>
+            </div>
+            <p class="category-name">{{ cat.name }}</p>
+            <p class="category-count">
+              {{ selectedCategoryId() === cat.categoryId ? 'Selected' : 'Browse →' }}
+            </p>
+          </div>
+        }
       </div>
-      <div class="col-6 col-md-2">
-        <div class="category-card">
-          <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&q=80');"></div>
-          <p class="category-name">Grains</p>
-          <p class="category-count">22 items</p>
+    } @else {
+      <div class="row g-3">
+        <div class="col-6 col-md-2">
+          <div class="category-card all-card"
+               [class.active]="selectedCategoryId() === null"
+               (click)="selectAll()">
+            <div class="category-img category-img-icon all-icon">
+              <i class="ti ti-apps"></i>
+            </div>
+            <p class="category-name">All</p>
+            <p class="category-count">
+              {{ selectedCategoryId() === null ? 'Selected' : 'Show everything' }}
+            </p>
+          </div>
         </div>
+        @for (cat of visibleCategories(); track cat.categoryId) {
+          <div class="col-6 col-md-2">
+            <div class="category-card"
+                 [class.active]="selectedCategoryId() === cat.categoryId"
+                 (click)="selectCategory(cat.categoryId)">
+              <div class="category-img category-img-icon">
+                <i class="ti" [ngClass]="categoryIcon(cat.name)"></i>
+              </div>
+              <p class="category-name">{{ cat.name }}</p>
+              <p class="category-count">
+                {{ selectedCategoryId() === cat.categoryId ? 'Selected' : 'Browse →' }}
+              </p>
+            </div>
+          </div>
+        }
+        @if (hasOverflow()) {
+          <div class="col-6 col-md-2">
+            <div class="category-card view-all-card" (click)="toggleViewAll()">
+              <div class="category-img category-img-icon view-all-icon">
+                <i class="ti ti-layout-grid"></i>
+              </div>
+              <p class="category-name">View all</p>
+              <p class="category-count">{{ categories().length }} categories →</p>
+            </div>
+          </div>
+        }
       </div>
-      <div class="col-6 col-md-2">
-        <div class="category-card">
-          <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1559598467-f8b76c8155d0?w=300&q=80');"></div>
-          <p class="category-name">Dairy</p>
-          <p class="category-count">12 items</p>
-        </div>
-      </div>
-      <div class="col-6 col-md-2">
-        <div class="category-card">
-          <div class="category-img" style="background-image: url('https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80');"></div>
-          <p class="category-name">Honey</p>
-          <p class="category-count">8 items</p>
-        </div>
-      </div>
-    </div>
+    }
   </section>
- 
+
   <!-- ============ SECTION HEADER + PRODUCTS ============ -->
   <section class="mt-5">
     <div class="d-flex justify-content-between align-items-end section-h mb-4">
@@ -76,92 +112,42 @@
         <span class="eyebrow">Freshly listed today</span>
         <h2>Today's harvest</h2>
       </div>
-      <a href="#" class="section-link">View all 84 →</a>
+      <a href="#" class="section-link">View all {{ farmerProducts().length }} →</a>
     </div>
- 
+
     <div class="row g-3">
-      <!-- Product 1 -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap" style="background-image: url('https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&q=85');">
-            <span class="product-pill"><span class="dot"></span>Fresh today</span>
-            <span class="product-fav"><i class="ti ti-heart" style="font-size: 16px;"></i></span>
-          </div>
-          <div class="product-body">
-            <p class="product-name">Potato</p>
-            <div class="farmer-row">
-              <div class="farmer-avatar" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80');"></div>
-              <p class="farmer-meta">Ramesh K. · 12km</p>
+      @for (fp of farmerProducts(); track fp.farmerProductId) {
+        <div class="col-6 col-md-3">
+          <div class="product-card">
+            <div class="product-img-wrap"
+                 [class.no-image]="!fp.image"
+                 [style.background-image]="fp.image ? 'url(' + fp.image + ')' : null">
+              @if (!fp.image) {
+                <i class="ti ti-leaf product-img-icon"></i>
+              }
+              <span class="product-pill"><span class="dot"></span>Fresh today</span>
+              <span class="product-fav"><i class="ti ti-heart" style="font-size: 16px;"></i></span>
             </div>
-            <div class="price-row">
-              <span class="price">₹28<span class="unit">/kg</span></span>
-              <button class="btn-add">Add +</button>
-            </div>
-          </div>
-        </div>
-      </div>
- 
-      <!-- Product 2 -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap" style="background-image: url('https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&q=85');">
-            <span class="product-pill best">Best price</span>
-            <span class="product-fav"><i class="ti ti-heart" style="font-size: 16px;"></i></span>
-          </div>
-          <div class="product-body">
-            <p class="product-name">Tomato</p>
-            <div class="farmer-row">
-              <div class="farmer-avatar" style="background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80');"></div>
-              <p class="farmer-meta">Lakshmi B. · 24km</p>
-            </div>
-            <div class="price-row">
-              <span class="price">₹40<span class="unit">/kg</span></span>
-              <button class="btn-add">Add +</button>
+            <div class="product-body">
+              <p class="product-name">{{ fp.productName ?? 'Produce' }}</p>
+              <div class="farmer-row">
+                <div class="farmer-avatar farmer-avatar-icon">
+                  <i class="ti ti-user"></i>
+                </div>
+                <p class="farmer-meta">{{ fp.farmerName ?? ('Farmer #' + fp.farmerId) }}</p>
+              </div>
+              <div class="price-row">
+                <span class="price">₹{{ fp.pricePerKg }}<span class="unit">/kg</span></span>
+                <button class="btn-add">Add +</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
- 
-      <!-- Product 3 -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap" style="background-image: url('https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=600&q=85');">
-            <span class="product-pill organic">Organic</span>
-            <span class="product-fav"><i class="ti ti-heart" style="font-size: 16px;"></i></span>
-          </div>
-          <div class="product-body">
-            <p class="product-name">Onion</p>
-            <div class="farmer-row">
-              <div class="farmer-avatar" style="background-image: url('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80');"></div>
-              <p class="farmer-meta">Anand P. · 8km</p>
-            </div>
-            <div class="price-row">
-              <span class="price">₹32<span class="unit">/kg</span></span>
-              <button class="btn-add">Add +</button>
-            </div>
-          </div>
+      } @empty {
+        <div class="col-12 text-center" style="color: var(--muted); padding: 28px;">
+          No fresh produce in this category yet.
         </div>
-      </div>
- 
-      <!-- Product 4 -->
-      <div class="col-6 col-md-3">
-        <div class="product-card">
-          <div class="product-img-wrap" style="background-image: url('https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=600&q=85');">
-            <span class="product-fav"><i class="ti ti-heart" style="font-size: 16px;"></i></span>
-          </div>
-          <div class="product-body">
-            <p class="product-name">Coriander</p>
-            <div class="farmer-row">
-              <div class="farmer-avatar" style="background-image: url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80');"></div>
-              <p class="farmer-meta">Meena S. · 15km</p>
-            </div>
-            <div class="price-row">
-              <span class="price">₹15<span class="unit">/bunch</span></span>
-              <button class="btn-add">Add +</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      }
     </div>
   </section>
  
