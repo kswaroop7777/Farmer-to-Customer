@@ -170,8 +170,8 @@
                   <td><span class="id-chip">#{{ fp.farmerProductId }}</span></td>
                   <td>
                     <div class="cell-main">
-                      @if (fp.image) {
-                        <div class="thumb" [style.background-image]="'url(' + fp.image + ')'"></div>
+                      @if (fp.productImage) {
+                        <div class="thumb" [style.background-image]="'url(' + fp.productImage + ')'"></div>
                       } @else {
                         <div class="thumb thumb-empty"><i class="ti ti-leaf"></i></div>
                       }

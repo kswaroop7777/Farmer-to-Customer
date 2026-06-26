@@ -66,5 +66,5 @@ export interface FarmerProduct {
   farmerName?: string;
   productName?: string;
   categoryName?: string;
-  image?: string;
+  productImage?: string;
 }

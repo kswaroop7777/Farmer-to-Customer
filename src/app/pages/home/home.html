@@ -120,9 +120,9 @@
         <div class="col-6 col-md-3">
           <div class="product-card">
             <div class="product-img-wrap"
-                 [class.no-image]="!fp.image"
-                 [style.background-image]="fp.image ? 'url(' + fp.image + ')' : null">
-              @if (!fp.image) {
+                 [class.no-image]="!fp.productImage"
+                 [style.background-image]="fp.productImage ? 'url(' + fp.productImage + ')' : null">
+              @if (!fp.productImage) {
                 <i class="ti ti-leaf product-img-icon"></i>
               }
               <span class="product-pill"><span class="dot"></span>Fresh today</span>
