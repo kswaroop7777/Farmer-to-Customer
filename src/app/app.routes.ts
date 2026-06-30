@@ -7,6 +7,8 @@ import { Product } from './product/product';
 import { Master } from './master/master';
 import { MasterProducts } from './pages/master-products/master-products';
 import { FarmerProducts } from './pages/farmer-products/farmer-products';
+import { CustomerOrders } from './pages/customer-orders/customer-orders';
+import { OrderPlaced } from './pages/order-placed/order-placed';
 
 export const routes: Routes = [
     { path: '', redirectTo:'home',pathMatch:'full' },
@@ -31,5 +33,13 @@ export const routes: Routes = [
         path:'farmerproducts',
         component:FarmerProducts,
         canActivate:[authGuard]
+    },
+    {
+        path:'customer-orders',
+        component:CustomerOrders
+    },
+    {
+        path:'order-placed',
+        component:OrderPlaced
     }
 ];

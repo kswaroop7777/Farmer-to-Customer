@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiResponse, Category, FarmerProduct, LoginRequest, LoginResponse, Product, RegisterResponse, Role, UserRegister } from '../Interfaces/LoginUser';
+import { ApiResponse, CartItem, Category, FarmerProduct, LoginRequest, LoginResponse, Order, Product, RegisterResponse, Role, UserRegister } from '../Interfaces/LoginUser';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
@@ -76,5 +76,23 @@ export class MasterService {
 
   updateFarmerProduct(farmerProductId: number, data: FarmerProduct) {
     return this.http.put<ApiResponse>(`${this.base}/farmerFarmerProducts/update-farmer-product/${farmerProductId}`, data);
+  }
+
+  /* ============ CART ============ */
+  addToCart(data: CartItem) {
+    return this.http.post<ApiResponse>(`${this.base}/farmerCart/add-to-cart`, data);
+  }
+
+  getCartByCustomer(customerId: number) {
+    return this.http.get<ApiResponse>(`${this.base}/farmerCart/get-cart-by-customer-with-joins/${customerId}`);
+  }
+
+  deleteCartItem(cartId: number) {
+    return this.http.delete<ApiResponse>(`${this.base}/farmerCart/delete-cart/${cartId}`);
+  }
+
+  /* ============ ORDERS ============ */
+  createOrder(data: Order) {
+    return this.http.post<ApiResponse>(`${this.base}/farmerOrders/create-order`, data);
   }
 }

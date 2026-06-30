@@ -67,4 +67,39 @@ export interface FarmerProduct {
   productName?: string;
   categoryName?: string;
   productImage?: string;
+  image?: string;
+}
+
+export interface CartItem {
+  cartId: number;
+  customerId: number;
+  farmerProductId: number;
+  quantity: number;
+  addedAt: string;
+}
+
+export interface CartViewItem {
+  cartId: number;
+  customerId: number;
+  farmerProductId: number;
+  quantity: number;
+  addedAt?: string;
+  productName?: string;
+  productImage?: string;
+  image?: string;
+  farmerName?: string;
+  pricePerKg?: number;
+  categoryName?: string;
+}
+
+export interface Order {
+  orderId: number;
+  customerId: number;
+  orderDate: string;
+  status: string;
+  city: string;
+  state: string;
+  pincode: string;
+  addressLine1: string;
+  addressLine2: string;
 }

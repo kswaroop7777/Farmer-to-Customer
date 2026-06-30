@@ -138,7 +138,7 @@
               </div>
               <div class="price-row">
                 <span class="price">₹{{ fp.pricePerKg }}<span class="unit">/kg</span></span>
-                <button class="btn-add">Add +</button>
+                <button class="btn-add" (click)="openCartModal(fp)">Add +</button>
               </div>
             </div>
           </div>
@@ -242,3 +242,78 @@
 
 </div>
 </div>
+
+<!-- ============ ADD TO CART MODAL ============ -->
+@if (cartModalOpen() && cartTarget(); as fp) {
+  <div class="cart-modal-backdrop" (click)="closeCartModal()">
+    <div class="cart-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+      <button type="button" class="cart-close" (click)="closeCartModal()" aria-label="Close">
+        <i class="ti ti-x"></i>
+      </button>
+
+      <div class="cart-modal-head">
+        <span class="eyebrow"><i class="ti ti-shopping-cart-plus"></i> Add to cart</span>
+        <h2>Stock up on <em>{{ fp.productName ?? 'this' }}</em>.</h2>
+      </div>
+
+      <div class="cart-product">
+        <div class="cart-product-img"
+             [class.no-image]="!fp.productImage && !fp.image"
+             [style.background-image]="(fp.productImage || fp.image) ? 'url(' + (fp.productImage || fp.image) + ')' : null">
+          @if (!fp.productImage && !fp.image) {
+            <i class="ti ti-leaf"></i>
+          }
+        </div>
+        <div class="cart-product-meta">
+          <p class="cp-name">{{ fp.productName ?? 'Produce' }}</p>
+          <p class="cp-farmer">
+            <i class="ti ti-user-circle"></i>
+            {{ fp.farmerName ?? ('Farmer #' + fp.farmerId) }}
+          </p>
+          <p class="cp-price">
+            ₹{{ fp.pricePerKg }}<span>/kg</span>
+            @if (fp.availableQuantity) {
+              <span class="cp-avail">· {{ fp.availableQuantity }} kg available</span>
+            }
+          </p>
+        </div>
+      </div>
+
+      <div class="cart-qty-block">
+        <label>Quantity (kg)</label>
+        <div class="qty-stepper">
+          <button type="button" class="qty-btn" (click)="decQty()" [disabled]="cartQty() <= 1">
+            <i class="ti ti-minus"></i>
+          </button>
+          <input type="number" min="1" [value]="cartQty()"
+                 (input)="setQty($any($event.target).value)" />
+          <button type="button" class="qty-btn"
+                  (click)="incQty()"
+                  [disabled]="cartQty() >= (fp.availableQuantity ?? 999)">
+            <i class="ti ti-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="cart-total-row">
+        <span class="lbl">Total</span>
+        <span class="amount">₹{{ cartTotal() }}</span>
+      </div>
+
+      <div class="cart-actions">
+        <button type="button" class="btn-ghost" (click)="closeCartModal()" [disabled]="cartSubmitting()">
+          Cancel
+        </button>
+        <button type="button" class="btn-submit" (click)="confirmAddToCart()" [disabled]="cartSubmitting()">
+          @if (cartSubmitting()) {
+            <i class="ti ti-loader-2 spin"></i> Adding…
+          } @else {
+            <i class="ti ti-shopping-cart-plus"></i> Add to cart
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,343 @@
+<div class="op-parent">
+
+  <!-- ============ STEPPER (always visible) ============ -->
+  <nav class="op-stepper" aria-label="Order progress">
+    <div class="step" [class.done]="!placed()" [class.active]="!placed()">
+      <span class="step-dot"><i class="ti ti-map-pin"></i></span>
+      <span class="step-label">Address</span>
+    </div>
+    <span class="step-rail" [class.filled]="placed()"></span>
+    <div class="step" [class.active]="placing()" [class.done]="placed()">
+      <span class="step-dot">
+        @if (placed()) { <i class="ti ti-check"></i> } @else { <i class="ti ti-credit-card"></i> }
+      </span>
+      <span class="step-label">Confirm</span>
+    </div>
+    <span class="step-rail" [class.filled]="placed()"></span>
+    <div class="step" [class.active]="placed()" [class.done]="placed()">
+      <span class="step-dot">
+        @if (placed()) { <i class="ti ti-confetti"></i> } @else { <i class="ti ti-truck-delivery"></i> }
+      </span>
+      <span class="step-label">Done</span>
+    </div>
+  </nav>
+
+  <!-- ============ SUCCESS STATE ============ -->
+  @if (placed() && placedOrder(); as ord) {
+    <section class="op-success">
+      <div class="success-hero">
+        <div class="confetti">
+          <span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="success-tick">
+          <i class="ti ti-check"></i>
+        </div>
+        <span class="eyebrow"><i class="ti ti-confetti"></i> Order placed</span>
+        <h1>Thank you. Your <em>basket</em> is on the way.</h1>
+        <p class="sub">We've notified the farmer. Your produce will be harvested fresh and you'll get a ping at every step.</p>
+
+        <div class="order-pill">
+          <span class="op-id">Order <b>#{{ ord.orderId }}</b></span>
+          <span class="op-dot">·</span>
+          <span>{{ ord.orderDate | date:'medium' }}</span>
+          <span class="op-dot">·</span>
+          <span class="op-total">₹{{ cartTotal() }}</span>
+        </div>
+      </div>
+
+      <div class="success-grid">
+
+        <!-- LEFT: timeline -->
+        <div class="card timeline-card">
+          <div class="card-head">
+            <span class="eyebrow"><i class="ti ti-route"></i> What happens next</span>
+            <h3>Your <em>fulfilment</em> journey.</h3>
+          </div>
+
+          <ol class="timeline">
+            <li class="done">
+              <span class="tl-dot"><i class="ti ti-check"></i></span>
+              <div>
+                <p class="tl-title">Order placed</p>
+                <p class="tl-meta">{{ ord.orderDate | date:'medium' }}</p>
+              </div>
+            </li>
+            <li class="active">
+              <span class="tl-dot"><i class="ti ti-bell-ringing"></i></span>
+              <div>
+                <p class="tl-title">Farmer notified</p>
+                <p class="tl-meta">Usually within minutes</p>
+              </div>
+            </li>
+            <li>
+              <span class="tl-dot"><i class="ti ti-plant-2"></i></span>
+              <div>
+                <p class="tl-title">Harvested fresh</p>
+                <p class="tl-meta">Picked the morning of dispatch</p>
+              </div>
+            </li>
+            <li>
+              <span class="tl-dot"><i class="ti ti-truck-delivery"></i></span>
+              <div>
+                <p class="tl-title">Out for delivery</p>
+                <p class="tl-meta">You'll get a tracking link</p>
+              </div>
+            </li>
+            <li>
+              <span class="tl-dot"><i class="ti ti-home-heart"></i></span>
+              <div>
+                <p class="tl-title">Delivered to your door</p>
+                <p class="tl-meta">Within 48 hours of harvest</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+
+        <!-- RIGHT: receipt -->
+        <div class="card receipt-card">
+          <div class="card-head">
+            <span class="eyebrow"><i class="ti ti-file-invoice"></i> Receipt</span>
+            <h3>Your <em>basket</em>.</h3>
+          </div>
+
+          <div class="receipt-address">
+            <div class="ra-icon"><i class="ti ti-map-pin"></i></div>
+            <div>
+              <p class="ra-title">Shipping to</p>
+              <p class="ra-body">
+                {{ ord.addressLine1 }}<br/>
+                @if (ord.addressLine2) { {{ ord.addressLine2 }}<br/> }
+                {{ ord.city }}, {{ ord.state }} — {{ ord.pincode }}
+              </p>
+            </div>
+          </div>
+
+          @if (cartItems().length) {
+            <ul class="receipt-items">
+              @for (it of cartItems(); track it.cartId) {
+                <li>
+                  <div class="thumb-sm"
+                       [class.no-image]="!it.productImage && !it.image"
+                       [style.background-image]="(it.productImage || it.image) ? 'url(' + (it.productImage || it.image) + ')' : null">
+                    @if (!it.productImage && !it.image) { <i class="ti ti-leaf"></i> }
+                  </div>
+                  <div class="li-body">
+                    <p class="li-name">{{ it.productName ?? 'Produce' }}</p>
+                    <p class="li-meta">{{ it.quantity }} kg × ₹{{ it.pricePerKg ?? 0 }}</p>
+                  </div>
+                  <span class="li-amt">₹{{ (it.quantity ?? 0) * (it.pricePerKg ?? 0) }}</span>
+                </li>
+              }
+            </ul>
+          }
+
+          <div class="receipt-totals">
+            <div class="row">
+              <span>Subtotal</span>
+              <span>₹{{ cartTotal() }}</span>
+            </div>
+            <div class="row">
+              <span>Delivery</span>
+              <span class="muted">{{ cartTotal() >= 299 ? 'Free' : '₹40' }}</span>
+            </div>
+            <div class="row grand">
+              <span>Total paid</span>
+              <span>₹{{ cartTotal() >= 299 ? cartTotal() : cartTotal() + 40 }}</span>
+            </div>
+          </div>
+
+          <div class="receipt-actions">
+            <a routerLink="/home" class="btn-ghost">
+              <i class="ti ti-arrow-left"></i> Keep shopping
+            </a>
+            <button type="button" class="btn-primary" (click)="printReceipt()">
+              <i class="ti ti-printer"></i> Print
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  } @else {
+
+    <!-- ============ CHECKOUT STATE ============ -->
+    <section class="op-hero">
+      <div class="hero-inner">
+        <span class="eyebrow"><i class="ti ti-truck-delivery"></i> Almost there</span>
+        <h1>One more step to your <em>fresh basket.</em></h1>
+        <p class="sub">Tell us where to drop it. Same-day delivery in Hyderabad if you order before 10am — free over ₹299.</p>
+      </div>
+      <div class="hero-glow"></div>
+    </section>
+
+    <section class="op-grid">
+
+      <!-- LEFT: address card -->
+      <div class="left-col">
+        <div class="card address-card">
+          <div class="card-head">
+            <span class="eyebrow"><i class="ti ti-map-pin"></i> Shipping address</span>
+            <h3>Where should we <em>drop it</em>?</h3>
+          </div>
+
+          <form [formGroup]="addressForm" (ngSubmit)="confirmOrder()" novalidate id="orderForm">
+            <div class="field"
+                 [class.has-error]="addressForm.get('addressLine1')?.invalid && addressForm.get('addressLine1')?.touched">
+              <label for="addr1">Address line 1</label>
+              <div class="field-input">
+                <i class="ti ti-home"></i>
+                <input type="text" id="addr1" formControlName="addressLine1"
+                       placeholder="House / building / locality" />
+              </div>
+              <p class="field-error">Address is required.</p>
+            </div>
+
+            <div class="field">
+              <label for="addr2">Address line 2 <span class="opt">(optional)</span></label>
+              <div class="field-input">
+                <i class="ti ti-map-pin"></i>
+                <input type="text" id="addr2" formControlName="addressLine2"
+                       placeholder="Landmark, instructions…" />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field"
+                   [class.has-error]="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
+                <label for="city">City</label>
+                <div class="field-input">
+                  <i class="ti ti-building"></i>
+                  <input type="text" id="city" formControlName="city" placeholder="Hyderabad" />
+                </div>
+                <p class="field-error">City is required.</p>
+              </div>
+              <div class="field"
+                   [class.has-error]="addressForm.get('state')?.invalid && addressForm.get('state')?.touched">
+                <label for="state">State</label>
+                <div class="field-input">
+                  <i class="ti ti-map-2"></i>
+                  <input type="text" id="state" formControlName="state" placeholder="Telangana" />
+                </div>
+                <p class="field-error">State is required.</p>
+              </div>
+            </div>
+
+            <div class="field"
+                 [class.has-error]="addressForm.get('pincode')?.invalid && addressForm.get('pincode')?.touched">
+              <label for="pincode">Pincode</label>
+              <div class="field-input">
+                <i class="ti ti-mailbox"></i>
+                <input type="text" id="pincode" formControlName="pincode" placeholder="500001" maxlength="6" />
+              </div>
+              <p class="field-error">Enter a valid 5–6 digit pincode.</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Trust strip -->
+        <div class="trust-strip">
+          <div class="trust">
+            <i class="ti ti-shield-check"></i>
+            <div>
+              <p>Safe & secure</p>
+              <span>Address used only for delivery</span>
+            </div>
+          </div>
+          <div class="trust">
+            <i class="ti ti-leaf"></i>
+            <div>
+              <p>Harvested fresh</p>
+              <span>Picked the morning of dispatch</span>
+            </div>
+          </div>
+          <div class="trust">
+            <i class="ti ti-cash"></i>
+            <div>
+              <p>Pay on delivery</p>
+              <span>No upfront payment needed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: summary -->
+      <aside class="summary-card glass">
+        <div class="card-head">
+          <span class="eyebrow"><i class="ti ti-basket"></i> Order summary</span>
+          <h3>{{ cartCount() }} {{ cartCount() === 1 ? 'item' : 'items' }} <em>in basket.</em></h3>
+        </div>
+
+        @if (cartLoading()) {
+          <div class="summary-empty">
+            <i class="ti ti-loader-2 spin"></i>
+            <p>Loading your basket…</p>
+          </div>
+        } @else if (cartItems().length === 0) {
+          <div class="summary-empty">
+            <i class="ti ti-basket-off"></i>
+            <p>Your basket is empty.</p>
+            <a routerLink="/home" class="link-soft">← Back to shopping</a>
+          </div>
+        } @else {
+          <ul class="summary-list">
+            @for (it of cartItems(); track it.cartId) {
+              <li>
+                <div class="thumb-sm"
+                     [class.no-image]="!it.productImage && !it.image"
+                     [style.background-image]="(it.productImage || it.image) ? 'url(' + (it.productImage || it.image) + ')' : null">
+                  @if (!it.productImage && !it.image) { <i class="ti ti-leaf"></i> }
+                </div>
+                <div class="li-body">
+                  <p class="li-name">{{ it.productName ?? 'Produce' }}</p>
+                  <p class="li-meta">
+                    @if (it.farmerName) {
+                      <i class="ti ti-user-circle"></i> {{ it.farmerName }} ·
+                    }
+                    {{ it.quantity }} kg × ₹{{ it.pricePerKg ?? 0 }}
+                  </p>
+                </div>
+                <span class="li-amt">₹{{ (it.quantity ?? 0) * (it.pricePerKg ?? 0) }}</span>
+              </li>
+            }
+          </ul>
+
+          <div class="summary-totals">
+            <div class="row">
+              <span>Subtotal</span>
+              <span>₹{{ cartTotal() }}</span>
+            </div>
+            <div class="row">
+              <span>Delivery</span>
+              <span class="muted">{{ cartTotal() >= 299 ? 'Free' : '₹40' }}</span>
+            </div>
+            <div class="row grand">
+              <span>Total</span>
+              <span>₹{{ cartTotal() >= 299 ? cartTotal() : cartTotal() + 40 }}</span>
+            </div>
+          </div>
+
+          @if (cartTotal() > 0 && cartTotal() < 299) {
+            <div class="free-hint">
+              <i class="ti ti-gift"></i>
+              <span>Add <b>₹{{ 299 - cartTotal() }}</b> more for free delivery</span>
+            </div>
+          }
+
+          <button type="submit" form="orderForm" class="btn-place"
+                  [disabled]="placing() || cartItems().length === 0">
+            @if (placing()) {
+              <i class="ti ti-loader-2 spin"></i> Placing order…
+            } @else {
+              Place order
+              <i class="ti ti-arrow-right"></i>
+            }
+          </button>
+        }
+      </aside>
+
+    </section>
+  }
+
+</div>

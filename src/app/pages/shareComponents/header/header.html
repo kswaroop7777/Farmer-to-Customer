@@ -18,11 +18,16 @@
       }@else{
            <a href="#" class="nav-link-k" routerLink="/product">Product</a>
       }
-      
+
     }
     </div>
     <div class="d-flex gap-2 align-items-center">
-      <i class="ti ti-shopping-cart" style="font-size: 22px; color: var(--green-800); cursor: pointer;"></i>
+      <button type="button" class="nav-cart-btn" (click)="openCart()" aria-label="Open cart">
+        <i class="ti ti-shopping-cart"></i>
+        @if (cartCount() > 0) {
+          <span class="cart-badge">{{ cartCount() }}</span>
+        }
+      </button>
 
       <ng-container *ngIf="userName(); else signInBtn">
         <span class="user-greet d-flex align-items-center gap-1" style="font-weight: 500; color: var(--green-800);">
@@ -37,4 +42,80 @@
       </ng-template>
     </div>
   </nav>
- 
+
+<!-- ============ CART DRAWER MODAL ============ -->
+@if (cartOpen()) {
+  <div class="cart-drawer-backdrop" (click)="closeCart()">
+    <aside class="cart-drawer" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+      <header class="cart-drawer-head">
+        <div>
+          <span class="eyebrow"><i class="ti ti-basket"></i> Your basket</span>
+          <h2>{{ cartCount() }} {{ cartCount() === 1 ? 'item' : 'items' }} <em>in cart.</em></h2>
+        </div>
+        <button type="button" class="cart-close" (click)="closeCart()" aria-label="Close">
+          <i class="ti ti-x"></i>
+        </button>
+      </header>
+
+      <div class="cart-drawer-body">
+        @if (cartLoading()) {
+          <div class="cart-empty">
+            <i class="ti ti-loader-2 spin"></i>
+            <p>Loading your cart…</p>
+          </div>
+        } @else if (cartItems().length === 0) {
+          <div class="cart-empty">
+            <i class="ti ti-basket-off"></i>
+            <p>Your basket is empty.</p>
+            <span>Browse the storefront and add some fresh produce.</span>
+          </div>
+        } @else {
+          <ul class="cart-list">
+            @for (it of cartItems(); track it.cartId) {
+              <li class="cart-row">
+                <div class="cart-thumb-lg"
+                     [class.no-image]="!it.productImage && !it.image"
+                     [style.background-image]="(it.productImage || it.image) ? 'url(' + (it.productImage || it.image) + ')' : null">
+                  @if (!it.productImage && !it.image) {
+                    <i class="ti ti-leaf"></i>
+                  }
+                </div>
+                <div class="cart-row-body">
+                  <p class="cart-row-name">{{ it.productName ?? 'Produce' }}</p>
+                  <p class="cart-row-farmer">
+                    <i class="ti ti-user-circle"></i>
+                    {{ it.farmerName ?? 'Farmer' }}
+                  </p>
+                  <p class="cart-row-meta">
+                    {{ it.quantity }} kg × ₹{{ it.pricePerKg ?? 0 }}
+                  </p>
+                </div>
+                <div class="cart-row-side">
+                  <span class="cart-row-total">₹{{ (it.quantity ?? 0) * (it.pricePerKg ?? 0) }}</span>
+                  <button type="button" class="cart-row-del" (click)="removeCartItem(it)" aria-label="Remove">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <footer class="cart-drawer-foot">
+        <div class="cart-total-row">
+          <span class="lbl">Subtotal</span>
+          <span class="amount">₹{{ cartTotal() }}</span>
+        </div>
+        <button type="button" class="btn-place-order"
+                [disabled]="cartItems().length === 0"
+                (click)="placeOrder()">
+          Place order
+          <i class="ti ti-arrow-right"></i>
+        </button>
+      </footer>
+
+    </aside>
+  </div>
+}
