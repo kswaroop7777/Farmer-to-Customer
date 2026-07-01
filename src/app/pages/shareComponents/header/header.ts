@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { MasterService } from '../../shareServices/master-service';
@@ -19,7 +19,7 @@ const GUEST: NavUser = { userId: 0, roleId: 0 };
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
-export class Header {
+export class Header  implements OnInit{
   userName = signal<string | null>(null);
   user: NavUser = GUEST;
 
@@ -40,6 +40,11 @@ export class Header {
     this.masterSer.onLogin$.subscribe({
       next: () => this.loadUser(),
     });
+  }
+  ngOnInit(): void {
+    this.masterSer.addToCart$.subscribe((res:boolean)=>{
+      this.loadCart()
+    })
   }
 
   private loadUser() {

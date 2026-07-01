@@ -10,6 +10,7 @@ export class MasterService {
 
   private base = 'https://feestracking.freeprojectapi.com/api';
   onLogin$: Subject<boolean> = new Subject<boolean>();
+  addToCart$: Subject<boolean> = new Subject<boolean>();
 
   constructor(private http: HttpClient) {}
 
@@ -94,5 +95,13 @@ export class MasterService {
   /* ============ ORDERS ============ */
   createOrder(data: Order) {
     return this.http.post<ApiResponse>(`${this.base}/farmerOrders/create-order`, data);
+  }
+
+  getOrdersByCustomerId(id:number){
+    return this.http.get(`${this.base}/farmerOrders/get-order-by-customer-id/${id}`)
+  }
+
+  getOrdersByFormerId(id:number){
+    return this.http.get(`{this.base}/farmerOrders/get-order-by-farmer-id/${id}`)
   }
 }

@@ -7,7 +7,7 @@ import { Product } from './product/product';
 import { Master } from './master/master';
 import { MasterProducts } from './pages/master-products/master-products';
 import { FarmerProducts } from './pages/farmer-products/farmer-products';
-import { CustomerOrders } from './pages/customer-orders/customer-orders';
+import { Orders } from './pages/orders/orders';
 import { OrderPlaced } from './pages/order-placed/order-placed';
 
 export const routes: Routes = [
@@ -36,7 +36,7 @@ export const routes: Routes = [
     },
     {
         path:'customer-orders',
-        component:CustomerOrders
+        component:Orders
     },
     {
         path:'order-placed',

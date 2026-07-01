@@ -130,6 +130,7 @@ export class Home implements OnInit {
         const name = fp.productName ?? 'Item';
         alert(`${this.cartQty()} kg of ${name} added to cart`);
         this.closeCartModal();
+        this.masterSer.addToCart$.next(true)
       },
       error: () => {
         this.cartSubmitting.set(false);
