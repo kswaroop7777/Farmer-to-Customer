@@ -103,3 +103,17 @@ export interface Order {
   addressLine1: string;
   addressLine2: string;
 }
+
+export interface IOrder {
+  orderId:number 
+  customerId:number
+  customerName:string
+  farmerId:number
+  orderDate:string
+  status:string
+  city:string
+  state:string
+  pincode:string
+  addressLine1:string
+  addressLine2:string
+}

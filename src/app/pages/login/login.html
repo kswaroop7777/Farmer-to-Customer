@@ -114,7 +114,9 @@
             <select id="reg-role" formControlName="roleId">
               <option [ngValue]="0" disabled>Select your role</option>
               @for(item of rolesList; track item.roleId){
-                <option [ngValue]="item.roleId">{{ item.roleName }}</option>
+                @if (item.roleId !== 1) {
+                  <option [ngValue]="item.roleId">{{ item.roleName }}</option>
+                }
               }
             </select>
           </div>

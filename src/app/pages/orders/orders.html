@@ -1,1 +1,332 @@
-<p>customer-orders works!</p>
+<div class="ord-parent">
+
+  <!-- ============ LIST VIEW ============ -->
+  @if (!selectedOrder()) {
+
+    <header class="ord-head">
+      <div class="head-text">
+        <span class="eyebrow">
+          <i class="ti ti-receipt-2"></i>
+          {{ isFarmerView() ? 'Incoming orders' : 'Your history' }}
+        </span>
+        <h1>
+          @if (isFarmerView()) {
+            Orders headed to your <em>farm gate.</em>
+          } @else {
+            Every basket you've <em>brought home.</em>
+          }
+        </h1>
+        <p class="sub">
+          @if (isFarmerView()) {
+            Manage incoming orders, update statuses as your produce moves along the way.
+          } @else {
+            Track past orders, re-order favorites, and see where your money helped a farmer.
+          }
+        </p>
+      </div>
+      <div class="head-stats">
+        <div class="stat-pill">
+          <div class="stat-icon"><i class="ti ti-shopping-bag"></i></div>
+          <div>
+            <div class="num">{{ counts().total }}</div>
+            <div class="lbl">Total orders</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon green"><i class="ti ti-checks"></i></div>
+          <div>
+            <div class="num">{{ counts().delivered }}</div>
+            <div class="lbl">Delivered</div>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-icon orange"><i class="ti ti-truck"></i></div>
+          <div>
+            <div class="num">{{ counts().transit }}</div>
+            <div class="lbl">In transit</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Filter + search -->
+    <div class="ord-toolbar">
+      <div class="filter-tabs">
+        <button type="button" class="chip" [class.active]="activeFilter() === 'all'" (click)="setFilter('all')">
+          <i class="ti ti-layout-grid"></i> All
+        </button>
+        <button type="button" class="chip" [class.active]="activeFilter() === 'placed'" (click)="setFilter('placed')">
+          <span class="dot placed"></span> Placed
+        </button>
+        <button type="button" class="chip" [class.active]="activeFilter() === 'transit'" (click)="setFilter('transit')">
+          <span class="dot transit"></span> In transit
+        </button>
+        <button type="button" class="chip" [class.active]="activeFilter() === 'delivered'" (click)="setFilter('delivered')">
+          <span class="dot delivered"></span> Delivered
+        </button>
+        <button type="button" class="chip" [class.active]="activeFilter() === 'cancelled'" (click)="setFilter('cancelled')">
+          <span class="dot cancelled"></span> Cancelled
+        </button>
+      </div>
+      <div class="search-input">
+        <i class="ti ti-search"></i>
+        <input type="text" placeholder="Search by order ID, city, status…"
+               [value]="search()" (input)="onSearch($any($event.target).value)" />
+      </div>
+    </div>
+
+    <!-- Order cards -->
+    <section class="orders-list">
+      @if (loading()) {
+        <div class="orders-empty">
+          <i class="ti ti-loader-2 spin"></i>
+          <p>Loading orders…</p>
+        </div>
+      } @else {
+        @for (o of filtered(); track o.orderId) {
+          <article class="order-card" (click)="viewOrder(o)">
+            <div class="oc-left">
+              <div class="oc-icon"><i class="ti ti-package"></i></div>
+              <div>
+                <p class="oc-id">Order <b>#{{ o.orderId }}</b></p>
+                <p class="oc-date">
+                  <i class="ti ti-calendar-event"></i>
+                  {{ o.orderDate | date:'mediumDate' }}
+                </p>
+              </div>
+            </div>
+
+            <div class="oc-mid">
+              <div class="addr-preview">
+                <i class="ti ti-map-pin"></i>
+                <div>
+                  <p>{{ o.addressLine1 }}</p>
+                  <span>{{ o.city }}, {{ o.state }} · {{ o.pincode }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="oc-right">
+              <span [class]="statusClass(o.status)">{{ o.status }}</span>
+              <span class="oc-view">
+                View details <i class="ti ti-arrow-right"></i>
+              </span>
+            </div>
+          </article>
+        } @empty {
+          <div class="orders-empty">
+            <i class="ti ti-shopping-bag-x"></i>
+            <p>No orders found.</p>
+            <span>
+              @if (activeFilter() !== 'all' || search()) {
+                Try clearing the filter or search.
+              } @else if (isFarmerView()) {
+                No incoming orders yet — customers will appear here as they buy.
+              } @else {
+                Once you check out, your orders will show up here.
+              }
+            </span>
+          </div>
+        }
+      }
+    </section>
+
+  } @else {
+
+    <!-- ============ DETAIL VIEW ============ -->
+    <button type="button" class="back-btn" (click)="back()">
+      <i class="ti ti-arrow-left"></i> Back to orders
+    </button>
+
+    @if (detailLoading()) {
+      <div class="orders-empty" style="max-width:1180px;margin:0 auto;">
+        <i class="ti ti-loader-2 spin"></i>
+        <p>Loading order details…</p>
+      </div>
+    }
+
+    <!-- Order hero -->
+    <header class="detail-hero">
+      <div class="dh-left">
+        <span class="eyebrow"><i class="ti ti-receipt-2"></i> Order details</span>
+        <h1>Order <em>#{{ selectedOrder().orderId }}</em></h1>
+        <p class="sub">
+          Placed on <b>{{ selectedOrder().orderDate | date:'medium' }}</b>
+        </p>
+      </div>
+      <div class="dh-right">
+        <span [class]="statusClass(selectedOrder().status)">
+          {{ selectedOrder().status }}
+        </span>
+        @if (selectedOrder().total != null) {
+          <p class="dh-total">₹{{ selectedOrder().total }}</p>
+        }
+      </div>
+    </header>
+
+    <!-- Timeline -->
+    <section class="tl-card">
+      <ol class="tl-line">
+        <li [class.done]="timelineStep(selectedOrder().status) >= 1"
+            [class.active]="timelineStep(selectedOrder().status) === 1">
+          <span class="tl-node"><i class="ti ti-check"></i></span>
+          <span class="tl-label">Placed</span>
+        </li>
+        <li [class.done]="timelineStep(selectedOrder().status) >= 2"
+            [class.active]="timelineStep(selectedOrder().status) === 2">
+          <span class="tl-node"><i class="ti ti-plant-2"></i></span>
+          <span class="tl-label">Harvested</span>
+        </li>
+        <li [class.done]="timelineStep(selectedOrder().status) >= 3"
+            [class.active]="timelineStep(selectedOrder().status) === 3">
+          <span class="tl-node"><i class="ti ti-truck-delivery"></i></span>
+          <span class="tl-label">In transit</span>
+        </li>
+        <li [class.done]="timelineStep(selectedOrder().status) >= 4"
+            [class.active]="timelineStep(selectedOrder().status) === 4">
+          <span class="tl-node"><i class="ti ti-home-heart"></i></span>
+          <span class="tl-label">Delivered</span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Two-column detail grid -->
+    <section class="detail-grid">
+
+      <!-- LEFT: action / items card -->
+      <div class="items-card">
+        <div class="card-head">
+          <span class="eyebrow"><i class="ti ti-settings"></i> Order actions</span>
+          <h3>Manage this <em>order</em>.</h3>
+        </div>
+
+        <!-- Status update block -->
+        @if (isFarmerView() || selectedOrder().status !== 'Cancelled') {
+          <div class="status-block">
+            <label class="status-label">
+              <i class="ti ti-circle-check"></i> Update status
+            </label>
+            <div class="status-control">
+              <select [value]="selectedOrder().status"
+                      (change)="onStatusChange($event)"
+                      [disabled]="actionInFlight()">
+                @for (s of statusOptions; track s) {
+                  <option [value]="s">{{ s }}</option>
+                }
+              </select>
+              @if (actionInFlight()) {
+                <span class="status-inline"><i class="ti ti-loader-2 spin"></i></span>
+              }
+            </div>
+            <p class="status-hint">
+              @if (isFarmerView()) {
+                Farmers move an order along: Placed → Harvested → In transit → Delivered.
+              } @else {
+                Track your order status here. Cancel below if you no longer need it.
+              }
+            </p>
+          </div>
+        }
+
+        <!-- Items list (only if the API returned any) -->
+        @if (selectedOrder().items?.length) {
+          <div class="items-sub">
+            <span class="eyebrow"><i class="ti ti-basket"></i> {{ selectedOrder().items.length }} items</span>
+          </div>
+          <ul class="items-list">
+            @for (it of selectedOrder().items; track it.farmerProductId ?? it.name) {
+              <li>
+                @if (it.image || it.productImage) {
+                  <div class="it-thumb"
+                       [style.background-image]="'url(' + (it.image ?? it.productImage) + ')'"></div>
+                } @else {
+                  <div class="it-thumb thumb-empty"><i class="ti ti-leaf"></i></div>
+                }
+                <div class="it-body">
+                  <p class="it-name">{{ it.name ?? it.productName ?? 'Produce' }}</p>
+                  @if (it.farmer ?? it.farmerName) {
+                    <p class="it-farmer">
+                      <i class="ti ti-user-circle"></i> {{ it.farmer ?? it.farmerName }}
+                    </p>
+                  }
+                  <p class="it-meta">
+                    {{ it.qty ?? it.quantity }} kg × ₹{{ it.price ?? it.pricePerKg }}
+                  </p>
+                </div>
+                <span class="it-amt">
+                  ₹{{ (it.qty ?? it.quantity ?? 0) * (it.price ?? it.pricePerKg ?? 0) }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+
+        <div class="item-actions">
+          @if (!isFarmerView() && selectedOrder().status !== 'Cancelled' && selectedOrder().status !== 'Delivered') {
+            <button type="button" class="btn-ghost" (click)="cancelOrder()" [disabled]="actionInFlight()">
+              <i class="ti ti-x"></i> Cancel order
+            </button>
+          }
+          <button type="button" class="btn-ghost danger" (click)="deleteOrder()" [disabled]="actionInFlight()">
+            <i class="ti ti-trash"></i> Delete order
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT: side rails -->
+      <aside class="side-col">
+
+        <div class="side-card">
+          <div class="card-head">
+            <span class="eyebrow"><i class="ti ti-map-pin"></i> Delivery address</span>
+          </div>
+          <p class="addr">
+            {{ selectedOrder().addressLine1 }}<br/>
+            @if (selectedOrder().addressLine2) { {{ selectedOrder().addressLine2 }}<br/> }
+            {{ selectedOrder().city }}, {{ selectedOrder().state }} — {{ selectedOrder().pincode }}
+          </p>
+        </div>
+
+        <div class="side-card">
+          <div class="card-head">
+            <span class="eyebrow"><i class="ti ti-credit-card"></i> Payment</span>
+          </div>
+          <div class="pay-row">
+            <div class="pay-icon"><i class="ti ti-cash"></i></div>
+            <div>
+              <p class="pay-title">Cash on delivery</p>
+              <p class="pay-sub">Paid when your basket arrives</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div class="card-head">
+            <span class="eyebrow"><i class="ti ti-info-circle"></i> Order info</span>
+          </div>
+          <div class="info-rows">
+            <div>
+              <span>Order ID</span>
+              <b>#{{ selectedOrder().orderId }}</b>
+            </div>
+            <div>
+              <span>Customer ID</span>
+              <b>{{ selectedOrder().customerId }}</b>
+            </div>
+            <div>
+              <span>Placed on</span>
+              <b>{{ selectedOrder().orderDate | date:'mediumDate' }}</b>
+            </div>
+            <div>
+              <span>Status</span>
+              <b>{{ selectedOrder().status }}</b>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </section>
+
+  }
+
+</div>

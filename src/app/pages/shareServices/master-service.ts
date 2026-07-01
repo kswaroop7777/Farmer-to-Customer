@@ -97,11 +97,23 @@ export class MasterService {
     return this.http.post<ApiResponse>(`${this.base}/farmerOrders/create-order`, data);
   }
 
-  getOrdersByCustomerId(id:number){
-    return this.http.get(`${this.base}/farmerOrders/get-order-by-customer-id/${id}`)
+  getOrdersByCustomerId(id: number) {
+    return this.http.get<ApiResponse>(`${this.base}/farmerOrders/get-order-by-customer-id/${id}`);
   }
 
-  getOrdersByFormerId(id:number){
-    return this.http.get(`{this.base}/farmerOrders/get-order-by-farmer-id/${id}`)
+  getOrdersByFormerId(id: number) {
+    return this.http.get<ApiResponse>(`${this.base}/farmerOrders/get-order-by-farmer-id/${id}`);
+  }
+
+  getOrderById(orderId: number) {
+    return this.http.get<ApiResponse>(`${this.base}/farmerOrders/get-order-by-order-id/${orderId}`);
+  }
+
+  updateOrderStatus(orderId: number, data: { status: string }) {
+    return this.http.put<ApiResponse>(`${this.base}/farmerOrders/update-order-status/${orderId}`, data);
+  }
+
+  deleteOrder(orderId: number) {
+    return this.http.delete<ApiResponse>(`${this.base}/farmerOrders/delete-order/${orderId}`);
   }
 }
