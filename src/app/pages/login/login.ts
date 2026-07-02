@@ -23,6 +23,30 @@ export class Login {
   route=inject(Router)
   rolesList:any[]=[]
 
+  get registerRoleOptions() {
+    return this.rolesList
+      .filter(r => {
+        const n = (r.roleName ?? '').toUpperCase();
+        return n === 'FARMER' || n === 'CUSTOMER';
+      })
+      .map(r => {
+        const isFarmer = (r.roleName ?? '').toUpperCase() === 'FARMER';
+        return {
+          roleId: r.roleId,
+          roleName: r.roleName,
+          icon: isFarmer ? 'ti-plant-2' : 'ti-basket',
+          description: isFarmer
+            ? 'Sell your fresh harvest directly to buyers.'
+            : 'Buy farm-fresh produce with no middlemen.',
+        };
+      });
+  }
+
+  selectRole(roleId: number) {
+    this.registerForm.get('roleId')?.setValue(roleId);
+    this.registerForm.get('roleId')?.markAsTouched();
+  }
+
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -36,7 +60,7 @@ export class Login {
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      roleId: [0, [Validators.required, Validators.min(2)]],
+      roleId: [0, [Validators.required, Validators.min(1)]],
       phone: ['', [Validators.required]],
       address: ['', [Validators.required]],
       city: ['', [Validators.required]],

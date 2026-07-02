@@ -112,15 +112,24 @@ export class Orders implements OnInit {
 
     this.masterSer.getOrderById(o.orderId).subscribe({
       next: (res: any) => {
-        const src = res?.order ?? res?.data ?? res ?? o;
-        const fresh = {
-          ...src,
-          items: src?.items ?? src?.orderItems ?? [],
-        };
+        // console.log('[getOrderById raw]', res);
+        const src = res?.data?.order ?? res?.order ?? res?.data ?? res ?? o;
+        const items =
+          src?.items ??
+          src?.orderItems ??
+          res?.data?.orderItems ??
+          res?.data?.items ??
+          res?.orderItems ??
+          [];
+        const fresh = { ...src, items };
+        // console.log('[selectedOrder normalized]', fresh);
         this.selectedOrder.set(fresh);
         this.detailLoading.set(false);
       },
-      error: () => this.detailLoading.set(false),
+      error: (err) => {
+        // console.error('[getOrderById error]', err);
+        this.detailLoading.set(false);
+      },
     });
   }
 

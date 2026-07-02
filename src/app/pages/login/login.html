@@ -108,17 +108,24 @@
 
         <!-- Role -->
         <div class="field" [class.has-error]="registerForm.get('roleId')?.invalid && registerForm.get('roleId')?.touched">
-          <label for="reg-role">I want to join as</label>
-          <div class="field-input">
-            <i class="ti ti-id-badge-2"></i>
-            <select id="reg-role" formControlName="roleId">
-              <option [ngValue]="0" disabled>Select your role</option>
-              @for(item of rolesList; track item.roleId){
-                @if (item.roleId !== 1) {
-                  <option [ngValue]="item.roleId">{{ item.roleName }}</option>
+          <label>I want to join as</label>
+          <div class="role-picker">
+            @for (role of registerRoleOptions; track role.roleId) {
+              <button type="button" class="role-tile"
+                      [class.active]="registerForm.value.roleId === role.roleId"
+                      (click)="selectRole(role.roleId)">
+                <div class="role-tile-icon">
+                  <i class="ti" [ngClass]="role.icon"></i>
+                </div>
+                <div class="role-tile-body">
+                  <div class="role-tile-name">{{ role.roleName }}</div>
+                  <div class="role-tile-desc">{{ role.description }}</div>
+                </div>
+                @if (registerForm.value.roleId === role.roleId) {
+                  <span class="role-tile-check"><i class="ti ti-check"></i></span>
                 }
-              }
-            </select>
+              </button>
+            }
           </div>
           <p class="field-error">Please pick a role.</p>
         </div>
